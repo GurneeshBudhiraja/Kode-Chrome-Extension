@@ -1,12 +1,12 @@
 import FiberManualRecordIcon from '@mui/icons-material/FiberManualRecord';
 import { useState } from 'react';
 
-function Footer({ aiAvailable }) {
+function Footer({ aiAvailable, currentTab }) {
   const [openHints, setOpenHints] = useState(0);
   return (
     <div
       className={`${
-        aiAvailable
+        aiAvailable && currentTab
           ? 'flex justify-between items-center mt-6'
           : 'absolute bottom-7'
       }`}
@@ -14,7 +14,7 @@ function Footer({ aiAvailable }) {
       <div className="font-inter text-footer-size-left text-footer-color-left tracking-wider">
         Powered by Gemini
       </div>
-      {aiAvailable && (
+      {aiAvailable && currentTab && (
         <div className="font-inter font-light text-footer-size-right text-footer-color-right">
           {openHints === 0 ? (
             <FiberManualRecordIcon fontSize="small" color="success" />
