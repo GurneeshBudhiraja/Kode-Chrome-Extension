@@ -32,6 +32,15 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
         sendResponse(hintResponse);
       }
     });
+  } else if (request.type === 'updateHint') {
+    console.log(request.quesName);
+    const hintTemplateResponse = hintTemplate(
+      request.quesName,
+      Date.now(),
+      request.hints
+    );
+    setLocalStorage(hintTemplateResponse);
+    sendResponse("")
   } else if (request.type === 'getCurrentTab') {
     getCurrentTab().then((tab) => sendResponse(tab));
   }

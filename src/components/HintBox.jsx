@@ -17,6 +17,17 @@ const HintBox = ({ currentTab: quesName }) => {
         hnt.hintNumber === hint.hintNumber ? { ...hnt, isLocked: false } : hnt
       )
     );
+    chrome.runtime.sendMessage(
+      { type: 'updateHint', hints, quesName },
+      (response) => {
+        if (chrome.runtime.lastError) {
+          console.error('Error sending message:', chrome.runtime.lastError); // TODO: Remove in production
+          return;
+        }
+        // TODO: remove in the production
+        console.log('Hint has been updated');
+      }
+    );
   };
 
   useEffect(() => {
@@ -28,7 +39,7 @@ const HintBox = ({ currentTab: quesName }) => {
       }
       setHints(response[quesName].hints);
     });
-  }, [quesName]);
+  }, [quesName, setHints]);
 
   return (
     <div className="flex gap-3 flex-col w-full">
