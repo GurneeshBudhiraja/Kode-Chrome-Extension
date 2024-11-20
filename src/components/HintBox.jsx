@@ -8,17 +8,19 @@ const HintBox = ({ currentTab: quesName }) => {
   const [hints, setHints] = useState([]);
   const hintClick = (hint) => {
     // Update the hint state with the AI response
-    console.log(hint.hintNumber);
     if (!hint.isLocked) {
       return;
     }
-    setHints((prevHints) =>
-      prevHints.map((hnt) =>
-        hnt.hintNumber === hint.hintNumber ? { ...hnt, isLocked: false } : hnt
-      )
+    const updatedHints = hints.map((hnt) =>
+      hnt.hintNumber === hint.hintNumber ? { ...hnt, isLocked: false } : hnt
     );
+    setHints(updatedHints);
+
+    // TODO: remove in production
+    console.log('hintbox.jsx hints updated');
+    console.log(updatedHints);
     chrome.runtime.sendMessage(
-      { type: 'updateHint', hints, quesName },
+      { type: 'updateHint', hints: updatedHints, quesName },
       (response) => {
         if (chrome.runtime.lastError) {
           console.error('Error sending message:', chrome.runtime.lastError); // TODO: Remove in production
@@ -39,7 +41,7 @@ const HintBox = ({ currentTab: quesName }) => {
       }
       setHints(response[quesName].hints);
     });
-  }, [quesName, setHints]);
+  }, [quesName]);
 
   return (
     <div className="flex gap-3 flex-col w-full">

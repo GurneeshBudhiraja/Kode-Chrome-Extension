@@ -33,14 +33,16 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
       }
     });
   } else if (request.type === 'updateHint') {
-    console.log(request.quesName);
+    console.log('service worker update hint');
+    console.log(request);
     const hintTemplateResponse = hintTemplate(
       request.quesName,
       Date.now(),
       request.hints
     );
+    console.log(hintTemplateResponse);
     setLocalStorage(hintTemplateResponse);
-    sendResponse("")
+    sendResponse('');
   } else if (request.type === 'getCurrentTab') {
     getCurrentTab().then((tab) => sendResponse(tab));
   }
