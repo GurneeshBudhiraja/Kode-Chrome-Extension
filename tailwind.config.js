@@ -19,6 +19,9 @@ export default {
         'extension-background-gradient':
           'conic-gradient(from 200deg, #10101a,#1c1c2e)',
       },
+      backgroundColor: {
+        solution: '#2f7d31',
+      },
       fontFamily: {
         roboto: ['Roboto', 'sans-serif'],
         inter: ['Inter', 'sans-serif'],
@@ -46,6 +49,7 @@ export default {
           left: '#8A8F98',
           right: '#C7C7C7',
         },
+        'response-color': '#1c1c2e',
       },
       scale: {
         'hint-scale': '1.03',

@@ -18,7 +18,7 @@ function App() {
       return;
     }
 
-    // message to service-worker for the current tab url
+    // message to service-worker for the current tab url and updating the state
     chrome.runtime.sendMessage({ type: 'getCurrentTab' }, (response) => {
       if (chrome.runtime.lastError) {
         console.error('Error sending message:', chrome.runtime.lastError); // TODO: Remove in production
@@ -27,10 +27,19 @@ function App() {
       console.log(response?.url);
       if (
         response &&
-        response?.url?.startsWith('https://leetcode.com/problems/') &&
-        response?.url?.endsWith('/description/')
+        response?.url?.startsWith('https://leetcode.com/problems/')
       ) {
-        setCurrentTab(response.url);
+        // TODO: remove in production
+        console.log(
+          response.url
+            ?.split('https://leetcode.com/problems/')[1]
+            ?.split('/')[0] ?? ''
+        );
+        setCurrentTab(
+          response.url
+            ?.split('https://leetcode.com/problems/')[1]
+            ?.split('/')[0] ?? ''
+        );
       }
     });
   }, []);
@@ -56,12 +65,12 @@ function App() {
               </div>
               <SwitchButton />
             </div>
-            <HintBox />
+            <HintBox currentTab={currentTab} />
           </div>
         ) : (
-            <div className="text-[#F5F5F5] bg-[#1A1B23] absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-lg font-medium p-3 text-center border rounded-lg select-none w-5/6">
-              Please open a LeetCode question to use AlgoMate.
-            </div>
+          <div className="text-[#F5F5F5] bg-[#1A1B23] absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-lg font-medium p-3 text-center border rounded-lg select-none w-5/6">
+            Please open a LeetCode question to use AlgoMate.
+          </div>
         )
       ) : (
         <div className="text-white text-center mt-4">Not available</div>

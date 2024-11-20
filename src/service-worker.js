@@ -5,6 +5,8 @@ import {
   getCurrentTab,
 } from './utils/utils.js';
 
+const DAY_IN_MS = 86400000;
+
 // getting the focus mode in the local storage
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   // TODO: remove in production
@@ -16,6 +18,20 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     });
   } else if (request.type === 'getHints') {
     // will get the hints from the local storage
+    const { quesName } = request;
+    console.log(`quesName is ${quesName}`);
+    getLocalStorage({ param: quesName }).then((hintResponse) => {
+      if (
+        !Object.keys(hintResponse).length ||
+        hintResponse[quesName].lastUpdated - Date.now() >= DAY_IN_MS
+      ) {
+        const hintTemplateResponse = hintTemplate(quesName, Date.now());
+        setLocalStorage(hintTemplateResponse);
+        sendResponse(hintTemplateResponse);
+      } else {
+        sendResponse(hintResponse);
+      }
+    });
   } else if (request.type === 'getCurrentTab') {
     getCurrentTab().then((tab) => sendResponse(tab));
   }
