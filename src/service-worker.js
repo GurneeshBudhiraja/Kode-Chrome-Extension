@@ -21,14 +21,9 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     // get hints from the local storage
     // will get the hints from the local storage
     const { quesName } = request;
-    console.log(`quesName is ${quesName}`);
     getLocalStorage({ param: quesName }).then((hintResponse) => {
-      if (
-        !Object.keys(hintResponse).length ||
-        hintResponse[quesName].lastUpdated - Date.now() >= DAY_IN_MS
-      ) {
-        const hintTemplateResponse = hintTemplate(quesName, Date.now());
-        setLocalStorage(hintTemplateResponse);
+      if (!Object.keys(hintResponse).length) {
+        const hintTemplateResponse = hintTemplate(quesName);
         sendResponse(hintTemplateResponse);
       } else {
         sendResponse(hintResponse);
@@ -38,11 +33,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     // update hints in the local storage
     console.log('service worker update hint');
     console.log(request);
-    const hintTemplateResponse = hintTemplate(
-      request.quesName,
-      Date.now(),
-      request.hints
-    );
+    const hintTemplateResponse = hintTemplate(request.quesName, request.hints);
     console.log(hintTemplateResponse);
     setLocalStorage(hintTemplateResponse);
     sendResponse('');

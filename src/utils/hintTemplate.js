@@ -31,9 +31,9 @@ const hintObj = [
   },
 ];
 
-function hintTemplate(quesName, lastUpdated, hints = hintObj) {
+function hintTemplate(quesName, hints = hintObj) {
   return {
-    [quesName]: { quesName, lastUpdated, hints },
+    [quesName]: { quesName, hints },
   };
 }
 export default hintTemplate;

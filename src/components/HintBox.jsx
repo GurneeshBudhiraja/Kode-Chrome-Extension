@@ -1,7 +1,7 @@
 import LightbulbIcon from '@mui/icons-material/Lightbulb';
 import LockIcon from '@mui/icons-material/Lock';
 import { ToolTip } from './components.js';
-import { setLocalStorage } from '../utils/utils.js';
+import { setLocalStorage, hintTemplate } from '../utils/utils.js';
 import { useState, useEffect } from 'react';
 
 const HintBox = ({ currentTab: quesName, setOpenHints }) => {
@@ -47,9 +47,11 @@ const HintBox = ({ currentTab: quesName, setOpenHints }) => {
         console.error('Error sending message:', chrome.runtime.lastError); // TODO: Remove in production
         return;
       }
-      setHints(response[quesName].hints);
+      console.log("response from hintbox is : ");
+      console.log(response);
+      setHints(response[quesName]?.hints);
     });
-  }, [quesName]);
+  }, []);
 
   return (
     <div className="flex gap-3 flex-col w-full">
@@ -86,6 +88,8 @@ const HintBox = ({ currentTab: quesName, setOpenHints }) => {
           )}
         </div>
       ))}
+      {/* TODO: complete the reset functionality */}
+      <button className="text-white">Reset</button>
     </div>
   );
 };
