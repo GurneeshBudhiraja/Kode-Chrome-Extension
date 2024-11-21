@@ -108,7 +108,11 @@ function App() {
               openHints={openHints}
             />
             <button
-              className="w-full bg-gray-800 hover:bg-gray-700 active:bg-gray-600 text-white px-4 py-2 rounded-md text-base font-medium"
+              className={`w-full bg-gray-800  text-white px-4 py-2 rounded-md text-base font-medium ${
+                openHints === 0
+                  ? 'cursor-not-allowed'
+                  : 'cursor-pointer hover:bg-gray-700 active:bg-gray-600'
+              }`}
               onClick={resetHints}
             >
               Reset Hints
