@@ -1,9 +1,10 @@
 import LightbulbIcon from '@mui/icons-material/Lightbulb';
 import LockIcon from '@mui/icons-material/Lock';
 import { ToolTip } from './components.js';
+import { setLocalStorage } from '../utils/utils.js';
 import { useState, useEffect } from 'react';
 
-const HintBox = ({ currentTab: quesName }) => {
+const HintBox = ({ currentTab: quesName, setOpenHints }) => {
   // store the hint state
   const [hints, setHints] = useState([]);
   const hintClick = (hint) => {
@@ -14,7 +15,6 @@ const HintBox = ({ currentTab: quesName }) => {
     const updatedHints = hints.map((hnt) =>
       hnt.hintNumber === hint.hintNumber ? { ...hnt, isLocked: false } : hnt
     );
-    setHints(updatedHints);
 
     // TODO: remove in production
     console.log('hintbox.jsx hints updated');
@@ -30,6 +30,14 @@ const HintBox = ({ currentTab: quesName }) => {
         console.log('Hint has been updated');
       }
     );
+
+    const usedHints = updatedHints.filter((hnt) => !hnt.isLocked).length;
+
+    // creating a new question name from existing quesName
+    const newQuesName = `totalHints${quesName}`;
+    setLocalStorage({ [newQuesName]: usedHints });
+    setOpenHints(usedHints);
+    setHints(updatedHints);
   };
 
   useEffect(() => {

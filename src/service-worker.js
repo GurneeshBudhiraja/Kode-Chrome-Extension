@@ -13,10 +13,12 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   console.log(request);
   // message from the password.js to notify background.js to know the user has entered the right password to access the history tab.
   if (request.type === 'getFocusMode') {
+    // get the focus mode from the local storage
     getLocalStorage({ param: 'isFocusMode' }).then((focusMode) => {
       sendResponse(focusMode);
     });
   } else if (request.type === 'getHints') {
+    // get hints from the local storage
     // will get the hints from the local storage
     const { quesName } = request;
     console.log(`quesName is ${quesName}`);
@@ -33,6 +35,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
       }
     });
   } else if (request.type === 'updateHint') {
+    // update hints in the local storage
     console.log('service worker update hint');
     console.log(request);
     const hintTemplateResponse = hintTemplate(
@@ -44,7 +47,25 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     setLocalStorage(hintTemplateResponse);
     sendResponse('');
   } else if (request.type === 'getCurrentTab') {
+    // get the current tab of the user
     getCurrentTab().then((tab) => sendResponse(tab));
+  } else if (request.type === 'getTotalHints') {
+    // get total hints number from the local storage
+    if (!request.quesName) {
+      sendResponse({ totalHints: null });
+    } else {
+      // creating a new key
+      const newQuesName = `totalHints${request.quesName}`;
+      getLocalStorage({ param: newQuesName }).then((totalHints) => {
+        console.log('TOTAL HINTS: ');
+        console.log(totalHints);
+        if (!Object.keys(totalHints).length) {
+          sendResponse({ totalHints: null });
+        } else {
+          sendResponse(totalHints);
+        }
+      });
+    }
   }
   return true;
 });

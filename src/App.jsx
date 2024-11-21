@@ -9,7 +9,7 @@ import { useEffect, useState } from 'react';
 
 function App() {
   const [aiAvailable, setAiAvailable] = useState(true);
-
+  const [openHints, setOpenHints] = useState(0); // calculates the total number of hints used
   const [currentTab, setCurrentTab] = useState('');
 
   useEffect(() => {
@@ -42,7 +42,23 @@ function App() {
         );
       }
     });
-  }, []);
+
+    // message to service-worker for getting the no of hints used
+    currentTab &&
+      chrome.runtime.sendMessage(
+        { type: 'getTotalHints', quesName: currentTab },
+        (response) => {
+          if (chrome.runtime.lastError) {
+            console.error('Error sending message:', chrome.runtime.lastError); // TODO: Remove in production
+            return;
+          }
+          // update the openHints state
+          if (response.totalHints !== null) {
+            setOpenHints(response[`totalHints${currentTab}`]);
+          }
+        }
+      );
+  }, [currentTab, openHints]);
 
   return (
     <div className="w-extension-width h-extension-height max-h-extension-height max-w-extension-width background bg-extension-background-gradient py-4 px-6 overflow-scroll ">
@@ -65,7 +81,7 @@ function App() {
               </div>
               <SwitchButton />
             </div>
-            <HintBox currentTab={currentTab} />
+            <HintBox currentTab={currentTab} setOpenHints={setOpenHints} />
           </div>
         ) : (
           <div className="text-[#F5F5F5] bg-[#1A1B23] absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-lg font-medium p-3 text-center border rounded-lg select-none w-5/6">
@@ -76,7 +92,11 @@ function App() {
         <div className="text-white text-center mt-4">Not available</div>
       )}
 
-      <Footer aiAvailable={aiAvailable} currentTab={currentTab} />
+      <Footer
+        aiAvailable={aiAvailable}
+        currentTab={currentTab}
+        openHints={openHints}
+      />
     </div>
   );
 }

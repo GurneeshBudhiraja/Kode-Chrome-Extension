@@ -1,8 +1,7 @@
 import FiberManualRecordIcon from '@mui/icons-material/FiberManualRecord';
 import { useState } from 'react';
 
-function Footer({ aiAvailable, currentTab }) {
-  const [openHints, setOpenHints] = useState(0);
+function Footer({ aiAvailable, currentTab, openHints }) {
   return (
     <div
       className={`${
