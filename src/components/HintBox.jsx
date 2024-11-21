@@ -47,7 +47,7 @@ const HintBox = ({ currentTab: quesName, setOpenHints }) => {
         console.error('Error sending message:', chrome.runtime.lastError); // TODO: Remove in production
         return;
       }
-      console.log("response from hintbox is : ");
+      console.log('response from hintbox is : ');
       console.log(response);
       setHints(response[quesName]?.hints);
     });
