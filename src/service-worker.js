@@ -57,6 +57,15 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
         }
       });
     }
+  } else if (request.type === 'resetHints') {
+    // reset hints from the local storage
+    const { quesName } = request;
+    const newQuesName = `totalHints${quesName}`;
+    // remove the stored object from the local storage
+    chrome.storage.sync.remove(quesName);
+    // remove the total hints from the local storage
+    chrome.storage.sync.remove(newQuesName);
+    sendResponse({ success: true });
   }
   return true;
 });

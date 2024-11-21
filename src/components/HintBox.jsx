@@ -4,7 +4,7 @@ import { ToolTip } from './components.js';
 import { setLocalStorage, hintTemplate } from '../utils/utils.js';
 import { useState, useEffect } from 'react';
 
-const HintBox = ({ currentTab: quesName, setOpenHints }) => {
+const HintBox = ({ currentTab: quesName, setOpenHints, openHints }) => {
   // store the hint state
   const [hints, setHints] = useState([]);
   const hintClick = (hint) => {
@@ -51,7 +51,7 @@ const HintBox = ({ currentTab: quesName, setOpenHints }) => {
       console.log(response);
       setHints(response[quesName]?.hints);
     });
-  }, []);
+  }, [quesName, openHints]);
 
   return (
     <div className="flex gap-3 flex-col w-full">
@@ -63,7 +63,7 @@ const HintBox = ({ currentTab: quesName, setOpenHints }) => {
             !hint.isLocked
               ? 'bg-solution cursor-not-allowed'
               : 'bg-hint-locked hover:opacity-80 active:opacity-70 cursor-pointer '
-          } transition-all duration-200 ease-in-out  rounded-xl p-4 shadow-lg flex justify-between items-center`}
+          } transition-all duration-200 ease-in-out  rounded-xl p-3 shadow-lg flex justify-between items-center`}
         >
           <div className="flex w-fit gap-1 items-center justify-center ">
             {hint.isLocked ? (
@@ -88,8 +88,6 @@ const HintBox = ({ currentTab: quesName, setOpenHints }) => {
           )}
         </div>
       ))}
-      {/* TODO: complete the reset functionality */}
-      <button className="text-white">Reset</button>
     </div>
   );
 };

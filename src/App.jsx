@@ -3,7 +3,7 @@ import {
   ToolTip,
   SwitchButton,
   HintBox,
-  Footer,
+  HintsUsed,
 } from './components/components.js';
 import { useEffect, useState } from 'react';
 
@@ -12,6 +12,20 @@ function App() {
   const [openHints, setOpenHints] = useState(0); // calculates the total number of hints used
   const [currentTab, setCurrentTab] = useState('');
 
+  // reset the hints from the local storage
+  const resetHints = () => {
+    // send message to the service-worker
+    chrome.runtime.sendMessage(
+      { type: 'resetHints', quesName: currentTab },
+      (response) => {
+        if (chrome.runtime.lastError) {
+          console.error('Error sending message:', chrome.runtime.lastError); // TODO: Remove in production
+        } else if (response.success) {
+          setOpenHints(0);
+        }
+      }
+    );
+  };
   useEffect(() => {
     if (!self.ai || !self.ai.languageModel) {
       setAiAvailable(false);
@@ -71,17 +85,34 @@ function App() {
       </div>
       {aiAvailable ? (
         currentTab ? (
-          <div className="mt-4 space-y-4">
+          <div className="mt-3 space-y-4">
             <div className="flex justify-between items-center">
               <div className="flex items-center">
                 <span className="text-focusmode-size text-white">
                   Focus mode
                 </span>
-                <ToolTip title="Focus mode" />
+                <ToolTip title="Reminds you to return to LeetCode only if you're off-task for 10 minutes." />
               </div>
               <SwitchButton />
             </div>
-            <HintBox currentTab={currentTab} setOpenHints={setOpenHints} />
+            {aiAvailable && currentTab && (
+              <HintsUsed
+                aiAvailable={aiAvailable}
+                currentTab={currentTab}
+                openHints={openHints}
+              />
+            )}
+            <HintBox
+              currentTab={currentTab}
+              setOpenHints={setOpenHints}
+              openHints={openHints}
+            />
+            <button
+              className="w-full bg-gray-800 hover:bg-gray-700 active:bg-gray-600 text-white px-4 py-2 rounded-md text-base font-medium"
+              onClick={resetHints}
+            >
+              Reset Hints
+            </button>
           </div>
         ) : (
           <div className="text-[#F5F5F5] bg-[#1A1B23] absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-lg font-medium p-3 text-center border rounded-lg select-none w-5/6">
@@ -89,14 +120,11 @@ function App() {
           </div>
         )
       ) : (
-        <div className="text-white text-center mt-4">Not available</div>
+        <div className="text-[#F5F5F5] bg-[#1A1B23] absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-lg font-medium p-3 text-center border rounded-lg select-none w-5/6">
+          {' '}
+          This extension is not supported on your current browser.
+        </div>
       )}
-
-      <Footer
-        aiAvailable={aiAvailable}
-        currentTab={currentTab}
-        openHints={openHints}
-      />
     </div>
   );
 }
