@@ -5,8 +5,6 @@ import {
   getCurrentTab,
 } from './utils/utils.js';
 
-const DAY_IN_MS = 86400000;
-
 // getting the focus mode in the local storage
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   // TODO: remove in production
@@ -66,6 +64,8 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     // remove the total hints from the local storage
     chrome.storage.sync.remove(newQuesName);
     sendResponse({ success: true });
+  } else if (request.type === 'createAiSession') {
+    // creates a new AI session
   }
   return true;
 });

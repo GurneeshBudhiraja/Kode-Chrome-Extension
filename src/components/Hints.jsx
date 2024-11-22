@@ -4,16 +4,22 @@ import { ToolTip } from './components.js';
 import { setLocalStorage, hintTemplate } from '../utils/utils.js';
 import { useState, useEffect } from 'react';
 
-const HintBox = ({ currentTab: quesName, setOpenHints, openHints }) => {
+const Hints = ({ quesName, setOpenHints, openHints }) => {
   // store the hint state
   const [hints, setHints] = useState([]);
-  const hintClick = (hint) => {
+
+  const hintClick = async (hint) => {
     // Update the hint state with the AI response
     if (!hint.isLocked) {
       return;
     }
-    const updatedHints = hints.map((hnt) =>
-      hnt.hintNumber === hint.hintNumber ? { ...hnt, isLocked: false } : hnt
+    // object destructuring
+    const { description, tooltip } = hint;
+
+    const updatedHints = hints.map((hintElement) =>
+      hintElement.hintNumber === hint.hintNumber
+        ? { ...hintElement, isLocked: false }
+        : hintElement
     );
 
     // TODO: remove in production
@@ -92,4 +98,4 @@ const HintBox = ({ currentTab: quesName, setOpenHints, openHints }) => {
   );
 };
 
-export default HintBox;
+export default Hints;

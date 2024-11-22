@@ -2,36 +2,33 @@ import './App.css';
 import {
   ToolTip,
   SwitchButton,
-  HintBox,
+  Hints,
   HintsUsed,
 } from './components/components.js';
 import { useEffect, useState } from 'react';
 
 function App() {
-  const [aiAvailable, setAiAvailable] = useState(true);
+  const [aiAvailable, setAiAvailable] = useState(true); // whether the browser supports the ai features
   const [openHints, setOpenHints] = useState(0); // calculates the total number of hints used
-  const [currentTab, setCurrentTab] = useState('');
+  const [quesName, setQuesName] = useState(''); // current question the user is on
 
-  // reset the hints from the local storage
+  // reset the hints and hintsCount from the local storage
   const resetHints = () => {
-    // send message to the service-worker
-    chrome.runtime.sendMessage(
-      { type: 'resetHints', quesName: currentTab },
-      (response) => {
-        if (chrome.runtime.lastError) {
-          console.error('Error sending message:', chrome.runtime.lastError); // TODO: Remove in production
-        } else if (response.success) {
-          setOpenHints(0);
-        }
+    // sending message to the service-worker
+    chrome.runtime.sendMessage({ type: 'resetHints', quesName }, (response) => {
+      if (chrome.runtime.lastError) {
+        console.error('Error sending message:', chrome.runtime.lastError); // TODO: Remove in production
+      } else if (response.success) {
+        setOpenHints(0);
       }
-    );
+    });
   };
+
   useEffect(() => {
     if (!self.ai || !self.ai.languageModel) {
       setAiAvailable(false);
       return;
     }
-
     // message to service-worker for the current tab url and updating the state
     chrome.runtime.sendMessage({ type: 'getCurrentTab' }, (response) => {
       if (chrome.runtime.lastError) {
@@ -49,7 +46,7 @@ function App() {
             ?.split('https://leetcode.com/problems/')[1]
             ?.split('/')[0] ?? ''
         );
-        setCurrentTab(
+        setQuesName(
           response.url
             ?.split('https://leetcode.com/problems/')[1]
             ?.split('/')[0] ?? ''
@@ -58,9 +55,9 @@ function App() {
     });
 
     // message to service-worker for getting the no of hints used
-    currentTab &&
+    quesName &&
       chrome.runtime.sendMessage(
-        { type: 'getTotalHints', quesName: currentTab },
+        { type: 'getTotalHints', quesName },
         (response) => {
           if (chrome.runtime.lastError) {
             console.error('Error sending message:', chrome.runtime.lastError); // TODO: Remove in production
@@ -68,23 +65,23 @@ function App() {
           }
           // update the openHints state
           if (response.totalHints !== null) {
-            setOpenHints(response[`totalHints${currentTab}`]);
+            setOpenHints(response[`totalHints${quesName}`]);
           }
         }
       );
-  }, [currentTab, openHints]);
+  }, [quesName, openHints]);
 
   return (
     <div className="w-extension-width h-extension-height max-h-extension-height max-w-extension-width background bg-extension-background-gradient py-4 px-6 overflow-scroll ">
       <div className="font-poppins font-bold text-heading-size inline-block bg-clip-text text-transparent bg-gradient-to-r from-heading-gradient-start from-0% via-heading-gradient-start via-30% to-heading-gradient-end to-100% tracking-wider">
-        AlgoMate
+        Kōdo
       </div>
 
       <div className="font-inter font-light text-tagline-size text-tagline-color">
         Cracking Algorithms, Together.
       </div>
       {aiAvailable ? (
-        currentTab ? (
+        quesName ? (
           <div className="mt-3 space-y-4">
             <div className="flex justify-between items-center">
               <div className="flex items-center">
@@ -95,15 +92,9 @@ function App() {
               </div>
               <SwitchButton />
             </div>
-            {aiAvailable && currentTab && (
-              <HintsUsed
-                aiAvailable={aiAvailable}
-                currentTab={currentTab}
-                openHints={openHints}
-              />
-            )}
-            <HintBox
-              currentTab={currentTab}
+            {aiAvailable && quesName && <HintsUsed openHints={openHints} />}
+            <Hints
+              quesName={quesName}
               setOpenHints={setOpenHints}
               openHints={openHints}
             />

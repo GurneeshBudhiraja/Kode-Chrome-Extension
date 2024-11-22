@@ -1,6 +1,6 @@
 import ToolTip from './ToolTip.jsx';
 import SwitchButton from './SwitchButton.jsx';
-import HintBox from './HintBox.jsx';
+import Hints from './Hints.jsx';
 import HintsUsed from './HintsUsed.jsx';
 
-export { ToolTip, SwitchButton, HintBox, HintsUsed };
+export { ToolTip, SwitchButton, Hints, HintsUsed };
