@@ -4,7 +4,7 @@ import { ToolTip } from './components.js';
 import { setLocalStorage, hintTemplate } from '../utils/utils.js';
 import { useState, useEffect } from 'react';
 
-const Hints = ({ quesName, setOpenHints, openHints }) => {
+const Hints = ({ quesName, setHintsCount, hintsCount }) => {
   // store the hint state
   const [hints, setHints] = useState([]);
 
@@ -42,7 +42,7 @@ const Hints = ({ quesName, setOpenHints, openHints }) => {
     // creating a new question name from existing quesName
     const newQuesName = `totalHints${quesName}`;
     setLocalStorage({ [newQuesName]: usedHints });
-    setOpenHints(usedHints);
+    setHintsCount(usedHints);
     setHints(updatedHints);
   };
 
@@ -57,7 +57,7 @@ const Hints = ({ quesName, setOpenHints, openHints }) => {
       console.log(response);
       setHints(response[quesName]?.hints);
     });
-  }, [quesName, openHints]);
+  }, [quesName, hintsCount]);
 
   return (
     <div className="flex gap-3 flex-col w-full">

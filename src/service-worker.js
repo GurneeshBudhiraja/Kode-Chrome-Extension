@@ -35,37 +35,37 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     console.log(hintTemplateResponse);
     setLocalStorage(hintTemplateResponse);
     sendResponse('');
-  } else if (request.type === 'getCurrentTab') {
-    // get the current tab of the user
+  } else if (request.type === 'getCurrentURL') {
+    // Gets the current tab info of the user
     getCurrentTab().then((tab) => sendResponse(tab));
   } else if (request.type === 'getTotalHints') {
     // get total hints number from the local storage
-    if (!request.quesName) {
-      sendResponse({ totalHints: null });
-    } else {
-      // creating a new key
-      const newQuesName = `totalHints${request.quesName}`;
-      getLocalStorage({ param: newQuesName }).then((totalHints) => {
-        console.log('TOTAL HINTS: ');
-        console.log(totalHints);
-        if (!Object.keys(totalHints).length) {
-          sendResponse({ totalHints: null });
-        } else {
-          sendResponse(totalHints);
-        }
-      });
-    }
+
+    const { questionName } = request;
+
+    // creating a new key using the question name
+    const newQuestionName = `totalHints${questionName}`;
+
+    getLocalStorage({ param: newQuestionName }).then((totalHints) => {
+      // Checking for an empty object
+      if (!Object.keys(totalHints).length) {
+        sendResponse({ totalHints: null });
+      } else {
+        sendResponse(totalHints);
+      }
+    });
   } else if (request.type === 'resetHints') {
     // reset hints from the local storage
-    const { quesName } = request;
-    const newQuesName = `totalHints${quesName}`;
-    // remove the stored object from the local storage
-    chrome.storage.sync.remove(quesName);
-    // remove the total hints from the local storage
-    chrome.storage.sync.remove(newQuesName);
+
+    const { questionName } = request;
+    const newQuestionName = `totalHints${questionName}`;
+
+    // Removing the stored hints from the local storage
+    chrome.storage.sync.remove(questionName);
+
+    // Removing the total hints from the local storage
+    chrome.storage.sync.remove(newQuestionName);
     sendResponse({ success: true });
-  } else if (request.type === 'createAiSession') {
-    // creates a new AI session
   }
   return true;
 });

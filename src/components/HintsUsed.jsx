@@ -1,17 +1,17 @@
 import FiberManualRecordIcon from '@mui/icons-material/FiberManualRecord';
 
-function HintsUsed({ openHints }) {
+function HintsUsed({ hintsCount }) {
   return (
     <div className="flex items-center place-self-end">
       <div className="font-inter w-full font-light text-footer-size-right text-footer-color-right">
-        {openHints === 0 ? (
+        {hintsCount === 0 ? (
           <FiberManualRecordIcon color="success" />
-        ) : openHints === 4 ? (
+        ) : hintsCount === 4 ? (
           <FiberManualRecordIcon color="error" />
         ) : (
           <FiberManualRecordIcon color="warning" />
         )}
-        {openHints}/4 Hints
+        {hintsCount}/4 Hints
       </div>
     </div>
   );

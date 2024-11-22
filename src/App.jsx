@@ -5,71 +5,63 @@ import {
   Hints,
   HintsUsed,
 } from './components/components.js';
+import { sendMessage } from './utils/utils.js';
 import { useEffect, useState } from 'react';
 
 function App() {
   const [aiAvailable, setAiAvailable] = useState(true); // whether the browser supports the ai features
-  const [openHints, setOpenHints] = useState(0); // calculates the total number of hints used
-  const [quesName, setQuesName] = useState(''); // current question the user is on
+  const [hintsCount, setHintsCount] = useState(0); // calculates the total number of hints used
+  const [questionName, setQuestionName] = useState(''); // current question the user is on
 
-  // reset the hints and hintsCount from the local storage
+  // Reset the hints and hintsCount from the local storage
   const resetHints = () => {
-    // sending message to the service-worker
-    chrome.runtime.sendMessage({ type: 'resetHints', quesName }, (response) => {
-      if (chrome.runtime.lastError) {
-        console.error('Error sending message:', chrome.runtime.lastError); // TODO: Remove in production
-      } else if (response.success) {
-        setOpenHints(0);
-      }
-    });
+    sendMessage({
+      type: 'resetHints',
+      questionName,
+    })
+      .then((resetHintsResponse) => {
+        if (resetHintsResponse.success) {
+          setHintsCount(0);
+        }
+      })
+      .catch((error) => console.log('Failed to reset hints:', error));
   };
 
   useEffect(() => {
+    // Checking if the browser supports the ai features
     if (!self.ai || !self.ai.languageModel) {
       setAiAvailable(false);
       return;
     }
-    // message to service-worker for the current tab url and updating the state
-    chrome.runtime.sendMessage({ type: 'getCurrentTab' }, (response) => {
-      if (chrome.runtime.lastError) {
-        console.error('Error sending message:', chrome.runtime.lastError); // TODO: Remove in production
-        return;
-      }
-      console.log(response?.url);
-      if (
-        response &&
-        response?.url?.startsWith('https://leetcode.com/problems/')
-      ) {
-        // TODO: remove in production
-        console.log(
-          response.url
-            ?.split('https://leetcode.com/problems/')[1]
-            ?.split('/')[0] ?? ''
-        );
-        setQuesName(
-          response.url
-            ?.split('https://leetcode.com/problems/')[1]
-            ?.split('/')[0] ?? ''
-        );
-      }
-    });
 
-    // message to service-worker for getting the no of hints used
-    quesName &&
-      chrome.runtime.sendMessage(
-        { type: 'getTotalHints', quesName },
-        (response) => {
-          if (chrome.runtime.lastError) {
-            console.error('Error sending message:', chrome.runtime.lastError); // TODO: Remove in production
-            return;
-          }
-          // update the openHints state
-          if (response.totalHints !== null) {
-            setOpenHints(response[`totalHints${quesName}`]);
-          }
+    // Gets the current tab info and validates for the valid leetcode question URL
+    sendMessage({ type: 'getCurrentURL' })
+      .then((URLResponse) => {
+        if (URLResponse?.url?.startsWith('https://leetcode.com/problems/')) {
+          console.log(URLResponse);
+          setQuestionName(
+            URLResponse.url
+              ?.split('https://leetcode.com/problems/')[1]
+              ?.split('/')[0] ?? ''
+          );
         }
-      );
-  }, [quesName, openHints]);
+      })
+      .catch((error) => console.log('Failed to fetch URL:', error));
+
+    // Gets the count of total used hints
+    if (questionName) {
+      sendMessage({
+        type: 'getTotalHints',
+        questionName,
+      })
+        .then((totalHintsResponse) => {
+          if (totalHintsResponse.totalHints !== null) {
+            setHintsCount(totalHintsResponse[`totalHints${questionName}`]);
+          }
+        })
+        .catch((error) => console.log('Failed to get totalHints:', error));
+    }
+  }, [questionName]);
 
   return (
     <div className="w-extension-width h-extension-height max-h-extension-height max-w-extension-width background bg-extension-background-gradient py-4 px-6 overflow-scroll ">
@@ -81,7 +73,7 @@ function App() {
         Cracking Algorithms, Together.
       </div>
       {aiAvailable ? (
-        quesName ? (
+        questionName ? (
           <div className="mt-3 space-y-4">
             <div className="flex justify-between items-center">
               <div className="flex items-center">
@@ -92,15 +84,17 @@ function App() {
               </div>
               <SwitchButton />
             </div>
-            {aiAvailable && quesName && <HintsUsed openHints={openHints} />}
+            {aiAvailable && questionName && (
+              <HintsUsed hintsCount={hintsCount} />
+            )}
             <Hints
-              quesName={quesName}
-              setOpenHints={setOpenHints}
-              openHints={openHints}
+              quesName={questionName}
+              setHintsCount={setHintsCount}
+              hintsCount={hintsCount}
             />
             <button
               className={`w-full bg-gray-800  text-white px-4 py-2 rounded-md text-base font-medium ${
-                openHints === 0
+                hintsCount === 0
                   ? 'cursor-not-allowed'
                   : 'cursor-pointer hover:bg-gray-700 active:bg-gray-600'
               }`}
