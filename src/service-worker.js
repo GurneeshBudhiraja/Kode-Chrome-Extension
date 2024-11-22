@@ -1,8 +1,8 @@
 import {
   getLocalStorage,
   setLocalStorage,
-  hintTemplate,
   getCurrentTab,
+  HintTemplate,
 } from './utils/utils.js';
 
 // getting the focus mode in the local storage
@@ -16,12 +16,13 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
       sendResponse(focusMode);
     });
   } else if (request.type === 'getHints') {
-    // get hints from the local storage
-    // will get the hints from the local storage
-    const { quesName } = request;
-    getLocalStorage({ param: quesName }).then((hintResponse) => {
+    // Get hints from the local storage
+    const { questionName } = request;
+
+    getLocalStorage({ param: questionName }).then((hintResponse) => {
       if (!Object.keys(hintResponse).length) {
-        const hintTemplateResponse = hintTemplate(quesName);
+        // Returns the new hint template
+        const hintTemplateResponse = new HintTemplate(questionName);
         sendResponse(hintTemplateResponse);
       } else {
         sendResponse(hintResponse);
@@ -29,10 +30,10 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     });
   } else if (request.type === 'updateHint') {
     // update hints in the local storage
-    console.log('service worker update hint');
-    console.log(request);
-    const hintTemplateResponse = hintTemplate(request.quesName, request.hints);
-    console.log(hintTemplateResponse);
+    const hintTemplateResponse = new HintTemplate(
+      request.questionName,
+      request.hints
+    );
     setLocalStorage(hintTemplateResponse);
     sendResponse('');
   } else if (request.type === 'getCurrentURL') {

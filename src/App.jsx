@@ -34,7 +34,7 @@ function App() {
       return;
     }
 
-    // Gets the current tab info and validates for the valid leetcode question URL
+    // Gets the current tab info and validates the valid leetcode question URL
     sendMessage({ type: 'getCurrentURL' })
       .then((URLResponse) => {
         if (URLResponse?.url?.startsWith('https://leetcode.com/problems/')) {
@@ -88,7 +88,7 @@ function App() {
               <HintsUsed hintsCount={hintsCount} />
             )}
             <Hints
-              quesName={questionName}
+              questionName={questionName}
               setHintsCount={setHintsCount}
               hintsCount={hintsCount}
             />

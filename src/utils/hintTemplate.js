@@ -31,9 +31,9 @@ const hintObj = [
   },
 ];
 
-function hintTemplate(quesName, hints = hintObj) {
-  return {
-    [quesName]: { quesName, hints },
-  };
+class HintTemplate {
+  constructor(questionName, hints = hintObj) {
+    this[questionName] = { questionName, hints };
+  }
 }
-export default hintTemplate;
+export default HintTemplate;

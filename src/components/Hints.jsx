@@ -1,63 +1,55 @@
+import { useState, useEffect } from 'react';
+import { setLocalStorage, sendMessage } from '../utils/utils.js';
 import LightbulbIcon from '@mui/icons-material/Lightbulb';
 import LockIcon from '@mui/icons-material/Lock';
 import { ToolTip } from './components.js';
-import { setLocalStorage, hintTemplate } from '../utils/utils.js';
-import { useState, useEffect } from 'react';
 
-const Hints = ({ quesName, setHintsCount, hintsCount }) => {
-  // store the hint state
+const Hints = ({ questionName, setHintsCount, hintsCount }) => {
   const [hints, setHints] = useState([]);
 
   const hintClick = async (hint) => {
-    // Update the hint state with the AI response
     if (!hint.isLocked) {
       return;
     }
-    // object destructuring
-    const { description, tooltip } = hint;
 
+    // Unlocks the hint by updating its isLocked property
     const updatedHints = hints.map((hintElement) =>
       hintElement.hintNumber === hint.hintNumber
         ? { ...hintElement, isLocked: false }
         : hintElement
     );
 
-    // TODO: remove in production
-    console.log('hintbox.jsx hints updated');
-    console.log(updatedHints);
-    chrome.runtime.sendMessage(
-      { type: 'updateHint', hints: updatedHints, quesName },
-      (response) => {
-        if (chrome.runtime.lastError) {
-          console.error('Error sending message:', chrome.runtime.lastError); // TODO: Remove in production
-          return;
-        }
-        // TODO: remove in the production
+    // Sends message to service-worker to update the hints in the local storage
+    sendMessage({ type: 'updateHint', hints: updatedHints, questionName })
+      .then(() => {
         console.log('Hint has been updated');
-      }
-    );
+      })
+      .catch((error) => console.log('Error updating hint:', error));
 
+    // Counts the number of unlocked hints
     const usedHints = updatedHints.filter((hnt) => !hnt.isLocked).length;
 
-    // creating a new question name from existing quesName
-    const newQuesName = `totalHints${quesName}`;
-    setLocalStorage({ [newQuesName]: usedHints });
+    // Creates a new question name(newQuestionName) from existing quesName for easy retrieval from local storage
+    const newQuestionName = `totalHints${questionName}`;
+
+    // Updates the local storage with the updated hints data
+    setLocalStorage({ [newQuestionName]: usedHints });
+
+    // Updates the state
     setHintsCount(usedHints);
     setHints(updatedHints);
   };
 
   useEffect(() => {
     // message to service-worker for the hints using the quesName
-    chrome.runtime.sendMessage({ type: 'getHints', quesName }, (response) => {
-      if (chrome.runtime.lastError) {
-        console.error('Error sending message:', chrome.runtime.lastError); // TODO: Remove in production
-        return;
-      }
-      console.log('response from hintbox is : ');
-      console.log(response);
-      setHints(response[quesName]?.hints);
-    });
-  }, [quesName, hintsCount]);
+    sendMessage({ type: 'getHints', questionName })
+      .then((hintsObjectResponse) => {
+        setHints(hintsObjectResponse[questionName]?.hints);
+      })
+      .catch((error) => {
+        console.log('Failed to get hints:', error);
+      });
+  }, [questionName, hintsCount]);
 
   return (
     <div className="flex gap-3 flex-col w-full">
