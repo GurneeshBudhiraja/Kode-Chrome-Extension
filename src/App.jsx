@@ -1,4 +1,3 @@
-import './App.css';
 import {
   ToolTip,
   SwitchButton,
@@ -10,8 +9,8 @@ import { useEffect, useState } from 'react';
 
 function App() {
   const [aiAvailable, setAiAvailable] = useState(true); // whether the browser supports the ai features
-  const [hintsCount, setHintsCount] = useState(0); // calculates the total number of hints used
-  const [questionName, setQuestionName] = useState(''); // current question the user is on
+  const [hintsCount, setHintsCount] = useState(0); // the total number of hints used
+  const [questionName, setQuestionName] = useState(''); // current leetcode question the user is on
 
   // Reset the hints and hintsCount from the local storage
   const resetHints = () => {
