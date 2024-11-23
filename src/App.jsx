@@ -1,30 +1,19 @@
 import {
   ToolTip,
   SwitchButton,
-  Hints,
-  HintsUsed,
+  CodingLanguage,
 } from './components/components.js';
-import { sendMessage } from './utils/utils.js';
+import {
+  getLocalStorage,
+  sendMessage,
+  setLocalStorage,
+} from './utils/utils.js';
 import { useEffect, useState } from 'react';
 
 function App() {
   const [aiAvailable, setAiAvailable] = useState(true); // whether the browser supports the ai features
   const [hintsCount, setHintsCount] = useState(0); // the total number of hints used
   const [questionName, setQuestionName] = useState(''); // current leetcode question the user is on
-
-  // Reset the hints and hintsCount from the local storage
-  const resetHints = () => {
-    sendMessage({
-      type: 'resetHints',
-      questionName,
-    })
-      .then((resetHintsResponse) => {
-        if (resetHintsResponse.success) {
-          setHintsCount(0);
-        }
-      })
-      .catch((error) => console.log('Failed to reset hints:', error));
-  };
 
   useEffect(() => {
     // Checking if the browser supports the ai features
@@ -46,28 +35,13 @@ function App() {
         }
       })
       .catch((error) => console.log('Failed to fetch URL:', error));
-
-    // Gets the count of total used hints
-    if (questionName) {
-      sendMessage({
-        type: 'getTotalHints',
-        questionName,
-      })
-        .then((totalHintsResponse) => {
-          if (totalHintsResponse.totalHints !== null) {
-            setHintsCount(totalHintsResponse[`totalHints${questionName}`]);
-          }
-        })
-        .catch((error) => console.log('Failed to get totalHints:', error));
-    }
   }, [questionName]);
 
   return (
-    <div className="w-extension-width h-extension-height max-h-extension-height max-w-extension-width background bg-extension-background-gradient py-4 px-6 overflow-scroll ">
+    <div className="w-screen h-screen background bg-extension-background-gradient py-4 px-6 overflow-scroll ">
       <div className="font-poppins font-bold text-heading-size inline-block bg-clip-text text-transparent bg-gradient-to-r from-heading-gradient-start from-0% via-heading-gradient-start via-30% to-heading-gradient-end to-100% tracking-wider">
         Kōdo
       </div>
-
       <div className="font-inter font-light text-tagline-size text-tagline-color">
         Cracking Algorithms, Together.
       </div>
@@ -83,28 +57,11 @@ function App() {
               </div>
               <SwitchButton />
             </div>
-            {aiAvailable && questionName && (
-              <HintsUsed hintsCount={hintsCount} />
-            )}
-            <Hints
-              questionName={questionName}
-              setHintsCount={setHintsCount}
-              hintsCount={hintsCount}
-            />
-            <button
-              className={`w-full bg-gray-800  text-white px-4 py-2 rounded-md text-base font-medium ${
-                hintsCount === 0
-                  ? 'cursor-not-allowed'
-                  : 'cursor-pointer hover:bg-gray-700 active:bg-gray-600'
-              }`}
-              onClick={resetHints}
-            >
-              Reset Hints
-            </button>
+            <CodingLanguage />
           </div>
         ) : (
           <div className="text-[#F5F5F5] bg-[#1A1B23] absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-lg font-medium p-3 text-center border rounded-lg select-none w-5/6">
-            Please open a LeetCode question to use AlgoMate.
+            Please open a LeetCode question to use Kōdo.
           </div>
         )
       ) : (
