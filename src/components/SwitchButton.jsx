@@ -1,6 +1,6 @@
-import Switch from '@mui/material/Switch';
 import { useState, useEffect } from 'react';
-import { setLocalStorage } from '../utils/utils.js';
+import { setLocalStorage, sendMessage } from '../utils/utils.js';
+import Switch from '@mui/material/Switch';
 
 function SwitchButton() {
   const [checked, setChecked] = useState(false);
@@ -10,17 +10,14 @@ function SwitchButton() {
     fetchFocusMode();
   }, []);
 
-  async function fetchFocusMode() {
-    chrome.runtime.sendMessage({ type: 'getFocusMode' }, (response) => {
-      if (chrome.runtime.lastError) {
-        console.error('Error sending message:', chrome.runtime.lastError); // TODO: Remove in production
-        setChecked(false);
-        return;
-      }
-      console.log(response); // TODO: Remove in production
-      setChecked(response?.isFocusMode ?? false);
-    });
-  }
+  // Gets the status of the focus mode
+  const fetchFocusMode = async () => {
+    sendMessage({ type: 'getFocusMode' })
+      .then((focusModeResponse) => {
+        setChecked(focusModeResponse?.isFocusMode ?? false);
+      })
+      .catch((error) => console.log('Failed to fetch focus mode:', error));
+  };
 
   return (
     <Switch
@@ -29,6 +26,7 @@ function SwitchButton() {
         setLocalStorage({ isFocusMode: !checked });
         setChecked(!checked);
       }}
+      // Change the background color of the switch to gray
       sx={{
         '& .MuiSwitch-track': {
           backgroundColor: 'gray',
