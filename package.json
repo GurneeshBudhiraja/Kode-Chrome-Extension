@@ -8,7 +8,7 @@
     "build": "vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "watch": "chokidar 'src/**/*' package.json tailwind.config.js -c 'npm run build'"
+    "watch": "chokidar 'src/**/*' manifest.json package.json tailwind.config.js -c 'npm run build'"
   },
   "dependencies": {
     "@crxjs/vite-plugin": "^2.0.0-beta.28",
