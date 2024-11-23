@@ -74,6 +74,15 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     // Removes the hints count from the local storage
     chrome.storage.sync.remove(newQuestionName);
     sendResponse({ success: true });
+  } else if (request.type === 'getPreferredLanguage') {
+    // Gets the preferred coding language from the local storage
+
+    getLocalStorage({ param: 'language' }).then((respone) => {
+      if (!Object.keys(respone).length) {
+        sendResponse({ language: false });
+      }
+      sendResponse(respone);
+    });
   }
   return true;
 });

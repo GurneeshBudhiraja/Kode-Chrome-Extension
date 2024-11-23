@@ -1,9 +1,7 @@
-import { useState } from 'react';
+import { setLocalStorage } from '../utils/utils.js';
 
-const CodingLanguage = () => {
-  const [language, setLanguage] = useState(''); // State to track the selected language
-
-  const languages = [
+const CodingLanguage = ({ selectedLanguage, setSelectedLanguage }) => {
+  const programmingLanguages = [
     { value: 'cpp', label: 'C++' },
     { value: 'java', label: 'Java' },
     { value: 'python', label: 'Python' },
@@ -16,26 +14,34 @@ const CodingLanguage = () => {
     { value: 'csharp', label: 'C#' },
   ];
 
+  const updateLanguage = async (e) => {
+    const choice = e.target.value;
+    console.log('TEMP CHOICE IS:');
+    console.log(choice);
+    await setLocalStorage({ language: choice });
+    setSelectedLanguage(choice);
+  };
+
   return (
-    <div className="px-6 py-4 border-b border-gray-800">
+    <div className="">
       <label htmlFor="language" className="block text-gray-300 mb-2">
         Programming Language
       </label>
       <select
         name="language"
         id="language"
-        value={language}
-        onChange={(e) => setLanguage(e.target.value)}
+        value={selectedLanguage}
+        onChange={updateLanguage}
         className="bg-gray-800 text-gray-300 border border-gray-600 rounded px-4 py-2 w-full"
       >
         <option value="" disabled hidden>
           Select a programming language
         </option>
-        {languages.map((lang) => (
+        {programmingLanguages.map((lang) => (
           <option
             key={lang.value}
             value={lang.value}
-            selected={lang.value === language}
+            selected={lang.value === selectedLanguage}
           >
             {lang.label}
           </option>

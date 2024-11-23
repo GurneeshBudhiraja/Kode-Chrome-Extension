@@ -12,7 +12,7 @@ import { useEffect, useState } from 'react';
 
 function App() {
   const [aiAvailable, setAiAvailable] = useState(true); // whether the browser supports the ai features
-  const [hintsCount, setHintsCount] = useState(0); // the total number of hints used
+  const [selectedLanguage, setSelectedLanguage] = useState(''); // State to track the selected language
   const [questionName, setQuestionName] = useState(''); // current leetcode question the user is on
 
   useEffect(() => {
@@ -35,6 +35,21 @@ function App() {
         }
       })
       .catch((error) => console.log('Failed to fetch URL:', error));
+
+    // Message to service-worker for preferred coding language of the user
+    if (questionName) {
+      sendMessage({ type: 'getPreferredLanguage' })
+        .then((languageResponse) => {
+          console.log('LANGUAGE RESPONSE IS ');
+          console.log(languageResponse);
+          languageResponse.language
+            ? setSelectedLanguage(languageResponse.language)
+            : setSelectedLanguage('');
+        })
+        .catch((error) =>
+          console.log('Failed to fetch coding language:', error)
+        );
+    }
   }, [questionName]);
 
   return (
@@ -57,7 +72,10 @@ function App() {
               </div>
               <SwitchButton />
             </div>
-            <CodingLanguage />
+            <CodingLanguage
+              selectedLanguage={selectedLanguage}
+              setSelectedLanguage={setSelectedLanguage}
+            />
           </div>
         ) : (
           <div className="text-[#F5F5F5] bg-[#1A1B23] absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-lg font-medium p-3 text-center border rounded-lg select-none w-5/6">
