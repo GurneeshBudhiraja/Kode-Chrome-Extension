@@ -1,4 +1,4 @@
-export default function sendMessage(messageObject) {
+function sendMessage(messageObject) {
   return new Promise((resolve, reject) => {
     chrome.runtime.sendMessage(messageObject, (response) => {
       if (chrome.runtime.lastError) {
@@ -9,3 +9,5 @@ export default function sendMessage(messageObject) {
     });
   });
 }
+
+export default sendMessage;

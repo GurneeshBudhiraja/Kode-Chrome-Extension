@@ -10,7 +10,7 @@ function SwitchButton() {
     fetchFocusMode();
   }, []);
 
-  // Gets the status of the focus mode
+  // Message to service-worker for the status of the focus mode
   const fetchFocusMode = async () => {
     sendMessage({ type: 'getFocusMode' })
       .then((focusModeResponse) => {
