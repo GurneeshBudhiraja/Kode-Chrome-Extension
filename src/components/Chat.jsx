@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
+import CircularProgress from '@mui/material/CircularProgress';
 
-const Chat = ({ aiLoading }) => {
+const Chat = ({ aiLoading, aiSession, setAiSession }) => {
   const [messages, setMessages] = useState([]);
   const lastMessageRef = useRef(null);
   const [input, setInput] = useState('');
@@ -31,7 +32,9 @@ const Chat = ({ aiLoading }) => {
     <div className="flex flex-col mt-4 rounded-lg border border-gray-700 bg-gray-900/50 w-full h-full ">
       <div className="flex-1 p-4 overflow-y-auto space-y-4">
         {aiLoading ? (
-          <div className="text-white">Loading....</div>
+          <div className="text-white h-full flex justify-center items-center ">
+            <CircularProgress />
+          </div>
         ) : (
           messages.map((message, index) => (
             <div
@@ -63,13 +66,13 @@ const Chat = ({ aiLoading }) => {
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={handleKeyDown}
             placeholder="Type your message..."
-            className="flex-1 bg-gray-800 text-gray-200 rounded-lg p-3 min-h-[44px] resize-none border border-gray-700 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none"
+            className="flex-1 bg-gray-800 text-gray-200 rounded-lg p-3 min-h-[44px] resize-none border border-gray-700 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none disabled:cursor-not-allowed"
             rows={1}
           />
           <button
             onClick={handleSend}
             disabled={!input.trim()}
-            className="h-full px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            className="h-full px-4 py-2 bg-blue-600 text-white rounded-lg disabled:hover:bg-blue-600 hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
             Send
           </button>

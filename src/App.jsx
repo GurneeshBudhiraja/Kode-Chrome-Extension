@@ -66,7 +66,10 @@ function App() {
         })
         .catch((error) => console.log('Failed to create session:', error));
     }
-  }, [questionName]);
+
+    // Updates the aiLoading state
+    setAILoading(false);
+  }, [questionName, aiSession]);
 
   return (
     <div className="w-screen h-screen background bg-extension-background-gradient py-4 px-6 overflow-scroll">
@@ -96,7 +99,11 @@ function App() {
               setSelectedLanguage={setSelectedLanguage}
             />
             <div className="h-[420px]">
-              <Chat aiLoading={aiLoading} />
+              <Chat
+                aiLoading={aiLoading}
+                aiSession={aiSession}
+                setAiSession={setAiSession}
+              />
             </div>
           </div>
         ) : (

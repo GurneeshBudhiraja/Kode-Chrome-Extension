@@ -3,7 +3,11 @@
   "name": "Kōdo",
   "version": "1.0.0",
   "description": "Kōdo",
-
+  "icons": {
+    "16": "images/Kodo16.png",
+    "48": "images/Kodo48.png",
+    "128": "images/Kodo128.png"
+  },
   "background": {
     "service_worker": "./src/service-worker.js",
     "type": "module"
