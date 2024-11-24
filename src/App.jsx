@@ -2,18 +2,15 @@ import {
   ToolTip,
   SwitchButton,
   CodingLanguage,
+  Chat,
 } from './components/components.js';
-import {
-  getLocalStorage,
-  sendMessage,
-  setLocalStorage,
-} from './utils/utils.js';
+import { sendMessage } from './utils/utils.js';
 import { useEffect, useState } from 'react';
 
 function App() {
-  const [aiAvailable, setAiAvailable] = useState(true); // whether the browser supports the ai features
-  const [selectedLanguage, setSelectedLanguage] = useState(''); // State to track the selected language
-  const [questionName, setQuestionName] = useState(''); // current leetcode question the user is on
+  const [aiAvailable, setAiAvailable] = useState(true); // Checks whether the browser supports the ai features
+  const [selectedLanguage, setSelectedLanguage] = useState(''); // Track the selected language
+  const [questionName, setQuestionName] = useState(''); // Current leetcode question the user is on
 
   useEffect(() => {
     // Checking if the browser supports the ai features
@@ -53,16 +50,19 @@ function App() {
   }, [questionName]);
 
   return (
-    <div className="w-screen h-screen background bg-extension-background-gradient py-4 px-6 overflow-scroll ">
-      <div className="font-poppins font-bold text-heading-size inline-block bg-clip-text text-transparent bg-gradient-to-r from-heading-gradient-start from-0% via-heading-gradient-start via-30% to-heading-gradient-end to-100% tracking-wider">
+    <div className="w-screen h-screen background bg-extension-background-gradient py-4 px-6 overflow-scroll">
+      <div className="font-poppins font-bold text-heading-size bg-clip-text text-transparent bg-gradient-to-r from-heading-gradient-start from-0% via-heading-gradient-start via-30% to-heading-gradient-end to-100% tracking-wider inline-block">
         Kōdo
+        <span className="ml-1 font-inter font-normal text-sm text-gray-600 tracking-normal">
+          [Ctrl + K/⌘K]
+        </span>
       </div>
       <div className="font-inter font-light text-tagline-size text-tagline-color">
         Cracking Algorithms, Together.
       </div>
       {aiAvailable ? (
         questionName ? (
-          <div className="mt-3 space-y-4">
+          <div className="mt-3 space-y-4 flex flex-col mb-3">
             <div className="flex justify-between items-center">
               <div className="flex items-center">
                 <span className="text-focusmode-size text-white">
@@ -76,6 +76,9 @@ function App() {
               selectedLanguage={selectedLanguage}
               setSelectedLanguage={setSelectedLanguage}
             />
+            <div className="h-[420px]">
+              <Chat />
+            </div>
           </div>
         ) : (
           <div className="text-[#F5F5F5] bg-[#1A1B23] absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-lg font-medium p-3 text-center border rounded-lg select-none w-5/6">
@@ -84,7 +87,6 @@ function App() {
         )
       ) : (
         <div className="text-[#F5F5F5] bg-[#1A1B23] absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-lg font-medium p-3 text-center border rounded-lg select-none w-5/6">
-          {' '}
           This extension is not supported on your current browser.
         </div>
       )}

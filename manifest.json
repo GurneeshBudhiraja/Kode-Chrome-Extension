@@ -8,9 +8,6 @@
     "service_worker": "./src/service-worker.js",
     "type": "module"
   },
-  "side_panel": {
-    "default_path": "./index.html"
-  },
   "content_scripts": [
     {
       "js": ["src/content.js"],
@@ -21,7 +18,7 @@
     "extension_pages": "script-src 'self'; object-src 'self'"
   },
   "action": {
-    "default_title": "Ctrl/Command + K"
+    "default_title": "Ctrl + K/⌘K"
   },
   "permissions": ["storage", "tabs", "activeTab", "sidePanel"],
   "commands": {

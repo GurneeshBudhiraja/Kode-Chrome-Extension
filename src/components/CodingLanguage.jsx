@@ -1,6 +1,7 @@
 import { setLocalStorage } from '../utils/utils.js';
 
 const CodingLanguage = ({ selectedLanguage, setSelectedLanguage }) => {
+  // Array of programming languages
   const programmingLanguages = [
     { value: 'cpp', label: 'C++' },
     { value: 'java', label: 'Java' },
@@ -14,16 +15,15 @@ const CodingLanguage = ({ selectedLanguage, setSelectedLanguage }) => {
     { value: 'csharp', label: 'C#' },
   ];
 
+  // Updates the selectedLanguage state and the local storage
   const updateLanguage = async (e) => {
     const choice = e.target.value;
-    console.log('TEMP CHOICE IS:');
-    console.log(choice);
-    await setLocalStorage({ language: choice });
+    setLocalStorage({ language: choice });
     setSelectedLanguage(choice);
   };
 
   return (
-    <div className="">
+    <>
       <label htmlFor="language" className="block text-gray-300 mb-2">
         Programming Language
       </label>
@@ -47,7 +47,7 @@ const CodingLanguage = ({ selectedLanguage, setSelectedLanguage }) => {
           </option>
         ))}
       </select>
-    </div>
+    </>
   );
 };
 

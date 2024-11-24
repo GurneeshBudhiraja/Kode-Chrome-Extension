@@ -5,8 +5,13 @@ import manifest from './manifest.json';
 
 // https://vite.dev/config/
 export default defineConfig({
-  plugins: [react(),
-    
-    crx({ manifest })],
-  
+  plugins: [react(), crx({ manifest })],
+  build: {
+    root: './',
+    rollupOptions: {
+      input: {
+        main: './index.html',
+      },
+    },
+  },
 });
