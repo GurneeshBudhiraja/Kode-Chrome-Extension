@@ -4,15 +4,20 @@ import {
   CodingLanguage,
   Chat,
 } from './components/components.js';
-import { sendMessage } from './utils/utils.js';
+import { sendMessage, createSession } from './utils/utils.js';
 import { useEffect, useState } from 'react';
 
 function App() {
   const [aiAvailable, setAiAvailable] = useState(true); // Checks whether the browser supports the ai features
   const [selectedLanguage, setSelectedLanguage] = useState(''); // Track the selected language
   const [questionName, setQuestionName] = useState(''); // Current leetcode question the user is on
+  const [aiSession, setAiSession] = useState(null); // Keeps the track of the ai session
+  const [aiLoading, setAILoading] = useState(false); // Keeps the track of the loading state
 
   useEffect(() => {
+    // Sets the aiLoading state
+    setAILoading(true);
+
     // Checking if the browser supports the ai features
     if (!self.ai || !self.ai.languageModel) {
       setAiAvailable(false);
@@ -47,6 +52,20 @@ function App() {
           console.log('Failed to fetch coding language:', error)
         );
     }
+
+    if (questionName && !aiSession) {
+      createSession()
+        .then((aiSessionResponse) => {
+          const { session } = aiSessionResponse;
+          console.log(session);
+          // TODO: only for debugging
+          session
+            .prompt('Who is ms dhoni in one line ')
+            .then((response) => console.log(response));
+          setAiSession(session);
+        })
+        .catch((error) => console.log('Failed to create session:', error));
+    }
   }, [questionName]);
 
   return (
@@ -77,7 +96,7 @@ function App() {
               setSelectedLanguage={setSelectedLanguage}
             />
             <div className="h-[420px]">
-              <Chat />
+              <Chat aiLoading={aiLoading} />
             </div>
           </div>
         ) : (
