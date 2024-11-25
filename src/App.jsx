@@ -13,6 +13,8 @@ function App() {
   const [questionName, setQuestionName] = useState(''); // Current leetcode question the user is on
   const [aiSession, setAiSession] = useState(null); // Keeps the track of the ai session
   const [aiLoading, setAILoading] = useState(false); // Keeps the track of the loading state
+  const [messages, setMessages] = useState([]); // Chat messages state
+  const [input, setInput] = useState(''); // Chat textarea state
 
   useEffect(() => {
     // Sets the aiLoading state
@@ -54,13 +56,15 @@ function App() {
     }
 
     if (questionName && !aiSession) {
-      createSession()
+      createSession({
+        systemPrompt: `Your name is Kōdo. You are a leetcode expert whose aim is to help the users in solving the leetcode problems. You will not directly give the answer to the problem but would help the user think in the right direction. If the user asks anything apart from the leetcode problem deny the request politely. The user is currently looking at the leetcode problem ${questionName} and the user's selected preferred language is ${selectedLanguage}. If the user asks multiple times to give the full answer you will return a JSON format like this {url:"gemini.google.com"}. However, your main aim would always be to help the user understand and make the core concept stronger by giving small hints to the user. With each new asked hint you will reveal more info about the leetcode problem. Make sure to keep the hints short, simple and informative. Only give long answers when providing the user with dry run or the solution itself. `,
+      })
         .then((aiSessionResponse) => {
           const { session } = aiSessionResponse;
           console.log(session);
-          // TODO: only for debugging
+          // TODO: For debugging
           session
-            .prompt('Who is ms dhoni in one line ')
+            .prompt('Who is ms dhoni ')
             .then((response) => console.log(response));
           setAiSession(session);
         })
@@ -69,7 +73,18 @@ function App() {
 
     // Updates the aiLoading state
     setAILoading(false);
+
+    messageAI('Write a welcome message to the user.');
   }, [questionName, aiSession]);
+
+  const messageAI = async (prompt) => {
+    // Welcome message to the user
+    const aiAnswer = await aiSession.prompt(prompt);
+    setMessages((prevMessages) => [
+      ...prevMessages,
+      { text: aiAnswer, sender: 'ai' },
+    ]);
+  };
 
   return (
     <div className="w-screen h-screen background bg-extension-background-gradient py-4 px-6 overflow-scroll">
@@ -101,8 +116,11 @@ function App() {
             <div className="h-[420px]">
               <Chat
                 aiLoading={aiLoading}
-                aiSession={aiSession}
-                setAiSession={setAiSession}
+                messageAI={messageAI}
+                messages={messages}
+                setMessages={setMessages}
+                input={input}
+                setInput={setInput}
               />
             </div>
           </div>

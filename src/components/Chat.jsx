@@ -1,12 +1,18 @@
 import { useState, useEffect, useRef } from 'react';
 import CircularProgress from '@mui/material/CircularProgress';
 
-const Chat = ({ aiLoading, aiSession, setAiSession }) => {
-  const [messages, setMessages] = useState([]);
-  const lastMessageRef = useRef(null);
-  const [input, setInput] = useState('');
+const Chat = ({
+  aiLoading,
+  messages,
+  setMessages,
+  input,
+  setInput,
+  messageAI,
+}) => {
+  const lastMessageRef = useRef(null); // Reference to the last message
 
   useEffect(() => {
+    // Scrolls to the last message
     if (lastMessageRef.current) {
       lastMessageRef.current.scrollIntoView({
         behavior: 'smooth',
@@ -15,13 +21,16 @@ const Chat = ({ aiLoading, aiSession, setAiSession }) => {
   }, [messages]);
 
   const handleSend = () => {
+    // Sends the message
     if (input.trim()) {
       setMessages([...messages, { text: input, sender: 'user' }]);
+      messageAI(input);
       setInput('');
     }
   };
 
   const handleKeyDown = (e) => {
+    // Listens for the Enter key when shift key is not pressed
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
       handleSend();
@@ -32,7 +41,7 @@ const Chat = ({ aiLoading, aiSession, setAiSession }) => {
     <div className="flex flex-col mt-4 rounded-lg border border-gray-700 bg-gray-900/50 w-full h-full ">
       <div className="flex-1 p-4 overflow-y-auto space-y-4">
         {aiLoading ? (
-          <div className="text-white h-full flex justify-center items-center ">
+          <div className="h-full flex justify-center items-center">
             <CircularProgress />
           </div>
         ) : (
@@ -55,6 +64,7 @@ const Chat = ({ aiLoading, aiSession, setAiSession }) => {
             </div>
           ))
         )}
+        {/* Reference to the end of the chat screen */}
         <div ref={lastMessageRef} />
       </div>
       <div className="border-t border-gray-700 p-4">
