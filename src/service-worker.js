@@ -90,6 +90,30 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
       }
       sendResponse(respone);
     });
+  } else if (request.type === 'getNotes') {
+    getLocalStorage({ param: 'notes' })
+      .then((notesResponse) => {
+        if (!Object.keys(notesResponse).length) {
+          sendResponse({ notes: [] });
+        } else {
+          sendResponse(notesResponse);
+        }
+      })
+      .catch(() => {
+        console.log('Failed to get notes from the local storage');
+      });
   }
   return true;
+});
+
+chrome.tabs.onUpdated.addListener((tabId) => {
+  chrome.tabs.get(tabId, (tabInfo) => {
+    console.log(tabInfo.url);
+  });
+});
+
+chrome.tabs.onActivated.addListener(({ tabId }) => {
+  chrome.tabs.get(tabId, (tabInfo) => {
+    console.log(tabInfo.url);
+  });
 });

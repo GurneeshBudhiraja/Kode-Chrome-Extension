@@ -4,6 +4,7 @@ import HintTemplate from './HintTemplate';
 import getCurrentTab from './getCurrenttab';
 import sendMessage from './sendMessage';
 import createSession from './createSession.js';
+import getUserCode from './getUserCode.js';
 
 export {
   setLocalStorage,
@@ -12,4 +13,5 @@ export {
   getCurrentTab,
   sendMessage,
   createSession,
+  getUserCode,
 };

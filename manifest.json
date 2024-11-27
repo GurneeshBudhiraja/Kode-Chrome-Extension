@@ -1,12 +1,12 @@
 {
   "manifest_version": 3,
-  "name": "Kōdo",
+  "name": "Kode",
   "version": "1.0.0",
-  "description": "Kōdo",
+  "description": "Kode",
   "icons": {
-    "16": "images/Kodo16.png",
-    "48": "images/Kodo48.png",
-    "128": "images/Kodo128.png"
+    "16": "public/images/Kodo16.png",
+    "48": "public/images/Kodo48.png",
+    "128": "public/images/Kodo128.png"
   },
   "background": {
     "service_worker": "./src/service-worker.js",
@@ -15,21 +15,24 @@
   "content_scripts": [
     {
       "js": ["src/content.js"],
-      "matches": ["<all_urls>"]
+      "matches": ["<all_urls>"],
+      "run_at": "document_idle"
     }
   ],
+  "host_permissions": ["http://*/*", "https://*/*"],
+
   "content_security_policy": {
     "extension_pages": "script-src 'self'; object-src 'self'"
   },
   "action": {
-    "default_title": "Ctrl + K/⌘K"
+    "default_title": "Ctrl + Shift + K / ⌘ + Shift + K"
   },
   "permissions": ["storage", "tabs", "activeTab", "sidePanel"],
   "commands": {
     "_execute_action": {
       "suggested_key": {
-        "default": "Ctrl+K",
-        "mac": "Command+K"
+        "default": "Ctrl+Shift+K",
+        "mac": "Command+Shift+K"
       }
     }
   }
