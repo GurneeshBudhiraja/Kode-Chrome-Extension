@@ -15,8 +15,7 @@
   "content_scripts": [
     {
       "js": ["src/content.js"],
-      "matches": ["<all_urls>"],
-      "run_at": "document_idle"
+      "matches": ["<all_urls>"]
     }
   ],
   "host_permissions": ["http://*/*", "https://*/*"],

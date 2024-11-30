@@ -49,7 +49,7 @@ function App() {
           setQuestionName={setQuestionName}
         />
       )}
-      {currentPage === 'notes' && <NotesPage />}
+      {currentPage === 'notes' && <NotesPage questionName={questionName} />}
     </div>
   );
 }

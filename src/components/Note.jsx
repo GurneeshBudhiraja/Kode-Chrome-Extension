@@ -12,7 +12,11 @@ const Note = ({ questionName, key: index, descripton, userNote, tags }) => {
   const [isExpanded, setIsExpanded] = useState(false);
 
   const handleClick = () => {
-    setIsExpanded(!isExpanded);
+    try {
+      setIsExpanded(!isExpanded);
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   return (
@@ -49,7 +53,7 @@ const Note = ({ questionName, key: index, descripton, userNote, tags }) => {
                           tag.bgColor ?? 'bg-green-600'
                         } text-white px-3 py-1 rounded-full text-xs font-medium`}
                       >
-                        {tag.value}
+                        {tag}
                       </span>
                     ))}
                 </div>

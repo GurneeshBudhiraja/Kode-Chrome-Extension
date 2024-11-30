@@ -26,7 +26,7 @@ function DsaPage({
     //   ...prevMessages,
     //   { text: aiAnswer, sender: 'ai' },
     // ]);
-    return
+    return;
   };
 
   useEffect(() => {
@@ -74,11 +74,6 @@ function DsaPage({
       })
         .then((aiSessionResponse) => {
           const { session } = aiSessionResponse;
-          console.log(session);
-          // TODO: For debugging
-          session
-            .prompt('Who is ms dhoni ')
-            .then((response) => console.log(response));
           setAiSession(session);
         })
         .catch((error) => console.log('Failed to create session:', error));

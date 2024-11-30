@@ -6,6 +6,7 @@ import CodingLanguage from './CodingLanguage.jsx';
 import Chat from './Chat.jsx';
 import OptionBar from './OptionBar.jsx';
 import Note from './Note.jsx';
+import SingleNote from './SingleNote.jsx';
 
 export {
   ToolTip,
@@ -16,4 +17,5 @@ export {
   Chat,
   OptionBar,
   Note,
+  SingleNote,
 };

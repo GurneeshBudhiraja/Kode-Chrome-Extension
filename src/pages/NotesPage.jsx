@@ -1,12 +1,18 @@
-import { Note } from '../components/components.js';
+import { Note, SingleNote } from '../components/components.js';
 import { useEffect, useState } from 'react';
 import { sendMessage } from '../utils/utils.js';
-function NotesPage() {
+import DescriptionIcon from '@mui/icons-material/Description';
+
+function NotesPage({ questionName }) {
   const [notes, setNotes] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [showNote, setShowNote] = useState(false);
 
+  // Gets notes from the service-worker.js
   async function getNotes() {
     const notesData = await sendMessage({ type: 'getNotes' });
+    console.log('notesData is: ');
+    console.log(notesData);
     if (!Object.keys(notesData).length) {
       setNotes([]);
     } else {
@@ -24,24 +30,40 @@ function NotesPage() {
       setNotes([]);
       setLoading(false);
     };
-  }, []);
+  }, [questionName]);
+
   return (
     <div>
-      {notes.length ? (
-        notes.map((note, index) => (
-          <Note
-            key={index}
-            questionName={note.questionName}
-            descripton={note.descripton}
-            userNote={note.userNote}
-            tags={note.tags}
-          />
-        ))
-      ) : (
-        <div className="text-[#F5F5F5] bg-[#1A1B23] absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-lg font-medium p-3 text-center border rounded-lg select-none w-5/6">
-          No notes found
+      {questionName && (
+        <div className="text-end">
+          <span
+            className=""
+            onClick={() => {
+              setShowNote(!showNote);
+            }}
+          >
+            <DescriptionIcon
+              htmlColor="whitesmoke"
+              className="cursor-pointer"
+            />
+          </span>
         </div>
       )}
+      {showNote && (
+        <SingleNote questionName={questionName} setNotes={setNotes} setShowNote={setShowNote} />
+      )}
+      {loading && <div className="text-white">Loading...</div>}
+      {!loading && notes.length
+        ? notes.map((note, index) => (
+            <Note
+              key={index}
+              questionName={note.questionName}
+              descripton={note.descripton}
+              userNote={note.userNote}
+              tags={note.tags}
+            />
+          ))
+        : ''}
     </div>
   );
 }
