@@ -17,6 +17,14 @@ let monitorUserTimeoutID = null;
   chrome.sidePanel.setPanelBehavior({ openPanelOnActionClick: true });
 })();
 
+// starts monitoring the urls as soon as the extension loads if the focus mode is true
+(async () => {
+  const { isFocusMode } = await getLocalStorage({ param: 'isFocusMode' });
+  if (isFocusMode) {
+    monitorUser = true;
+  }
+})();
+
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   console.log(request);
 
@@ -105,11 +113,10 @@ let trackUserTimeoutID = null;
 let trackUserAiSession = null;
 
 const trackUser = async (tabURL) => {
-  
   if (!trackUserAiSession || trackUserAiSession?.tokensLeft < 50) {
     trackUserAiSession = await self.ai.languageModel.create({
       systemPrompt:
-        'Your job is to identify by looking at the url of a website or the title and description of the youtube video to tell in JSON response whether this website or video is related to the following: leetcode problem, DSA, coding, programming or anything related to technology. The main goal of the user to focus on leetcode problems. So all the websites that does not contribute to leetcode problems should be considered as invalid. I will also have to show the user a message about reminding how this website is not related and the user should go back to the leetcode problem. The friendly message you would generate to inform the user how this is not relevant would be not longer than 1 sentence. Keep it short and you are free to include a small quote. The response would be in the following JSON format: "{"relevant":"false","userMessage":"some positive message reminding the user"}" or something like this too "{"relevant":"true","userMessage":""(no message is required as the relevant is true)}". If the relevant is false, inform the user with a one line message that this is not relevant with a small one line positive quote. Be playful with this like did you like your x minutes break how about hitting some more leetcode questions something like this',
+        'Your job is to identify by looking at the url of a website or the title and description of the youtube video to tell in JSON response whether this website or video is related to the following: leetcode problem, DSA, coding, programming or anything related to technology. The main goal of the user to focus on leetcode problems. So all the websites that does not contribute to leetcode problems should be considered as invalid. I will also have to show the user a message about reminding how this website is not related and the user should go back to the leetcode problem. The friendly message you would generate to inform the user how this is not relevant would be not longer than 1 sentence. Keep it short and you are free to include a small quote. The response would be in the following JSON format: "{"relevant":"false","userMessage":"some positive message reminding the user"}" or something like this too "{"relevant":"true","userMessage":""(no message is required as the relevant is true)}". If the relevant is false, inform the user with a one line message that this is not relevant with a small one line positive quote. Be playful with this like did you like your x minutes break how about hitting some more leetcode questions something like this. One thing to keep in mind is to keep the userMessage as empty string when the relevant is true',
     });
   }
   clearTimeout(trackUserTimeoutID);
@@ -117,5 +124,5 @@ const trackUser = async (tabURL) => {
     console.log(tabURL);
     const response = await trackUserAiSession.prompt(`${tabURL}`);
     console.log(response);
-  }, 100);
+  }, 500);
 };
