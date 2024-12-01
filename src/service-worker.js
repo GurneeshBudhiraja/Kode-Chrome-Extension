@@ -6,7 +6,7 @@ import {
 } from './utils/utils.js';
 
 let monitorUser = null;
-let tabURL = null;
+let tabDetails = null;
 let monitorUserTimeoutID = null;
 
 // side panel
@@ -93,18 +93,18 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 
 chrome.tabs.onUpdated.addListener((tabId) => {
   chrome.tabs.get(tabId, (tabInfo) => {
-    tabURL = tabInfo.url;
+    tabDetails = tabInfo;
     if (monitorUser) {
-      trackUser(tabURL);
+      trackUser(tabDetails);
     }
   });
 });
 
 chrome.tabs.onActivated.addListener(({ tabId }) => {
   chrome.tabs.get(tabId, (tabInfo) => {
-    tabURL = tabInfo.url;
+    tabDetails = tabInfo;
     if (monitorUser) {
-      trackUser(tabURL);
+      trackUser(tabDetails);
     }
   });
 });
@@ -112,7 +112,8 @@ chrome.tabs.onActivated.addListener(({ tabId }) => {
 let trackUserTimeoutID = null;
 let trackUserAiSession = null;
 
-const trackUser = async (tabURL) => {
+const trackUser = async (tabDetails) => {
+  const { url } = tabDetails;
   if (!trackUserAiSession || trackUserAiSession?.tokensLeft < 50) {
     trackUserAiSession = await self.ai.languageModel.create({
       systemPrompt:
@@ -121,8 +122,21 @@ const trackUser = async (tabURL) => {
   }
   clearTimeout(trackUserTimeoutID);
   trackUserTimeoutID = setTimeout(async () => {
-    console.log(tabURL);
-    const response = await trackUserAiSession.prompt(`${tabURL}`);
-    console.log(response);
-  }, 500);
+    console.log(url);
+    console.log(tabDetails);
+    if (url.includes('https://www.youtube.com/watch?v=')) {
+      const { id } = tabDetails;
+      const youtubeInfo = await chrome.tabs.sendMessage(id, {
+        type: 'getYoutubeVideoInfo',
+      });
+      const { response: title } = youtubeInfo;
+      const aiResponse = await trackUserAiSession.prompt(
+        `Tell whether this youtube video aligns with the mentioned goals ${title} in the format that you are supposed to answer.`
+      );
+      console.log(aiResponse);
+    } else {
+      const aiResponse = await trackUserAiSession.prompt(`${url}`);
+      console.log(aiResponse);
+    }
+  }, 1000);
 };

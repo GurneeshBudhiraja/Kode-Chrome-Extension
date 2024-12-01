@@ -37,5 +37,10 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
         }, 1000);
       }
     }, 2000);
+  } else if (message.type === 'getYoutubeVideoInfo') {
+    const title = document
+      .querySelector('#above-the-fold')
+      .querySelector('#title').innerText;
+    sendResponse({ response: title });
   }
 });
