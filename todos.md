@@ -1,10 +1,11 @@
 - ✅ different section to show save leetcode questions
 - ✅ Add the Leetcode notes and save feature also generate tags using ai
+- ✅ If the user asks for a full answer direct the user to the gemini website
+- ✅ Fetch user written code from content script
+- ✅ Mechanism to communicate b/w service worker and background.js
+- [ ] Focus mode => option for the user to add which sort of websites distract the user the most
 - [ ] Find similar leetcode questions
-- [ ] Mechanism to communicate b/w service worker and background.js
-- [ ] Fetch user written code from content script
 - [ ] After that create a good system prompt
-- [ ] If the user asks for a full answer direct the user to the gemini website
 - [ ] If the user is on any docs website the gemini would analyze the content and give the answers accordingly
 - [ ] Opens any web page and do the task of your choice
 - [ ] Tells the user how to setup a project on github and also answer dev related questions in the extension
@@ -17,9 +18,7 @@
 
 1. document.querySelector(".CEgMp").innerText For getting the branch name
 
-2. for getting the input field of gemini.google.com 
-`const ele = document.querySelector("[data-placeholder='Ask Gemini']")`
-
-
+2. for getting the input field of gemini.google.com
+   `const ele = document.querySelector("[data-placeholder='Ask Gemini']")`
 
 `const button = document.querySelectorAll(".send-button")`
