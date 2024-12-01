@@ -54,7 +54,9 @@ const SingleNote = ({ questionName, setNotes, setShowNote }) => {
     const questionDescritpion = await getQuestionDescription();
 
     const summarizer = await createSummarizerSession({
-      type: 'headline',
+      sharedContext:
+        'summarize the text in no more than one sentence and keep it short, easy to read and also gives the user an idea what the question is about.',
+      type: 'tl;dr',
       format: 'plain-text',
       length: 'short',
     });
@@ -63,7 +65,7 @@ const SingleNote = ({ questionName, setNotes, setShowNote }) => {
 
     const prompter = await createPromptSession({
       systemPrompt:
-        'Based on the leetcode question provided generate the tags in the form of JSON format like this: {"tags":"[tag1, tag2]"}. The tags should be relevant to the question and only those tags should be given to the question that are most relevant to the question.',
+        'Based on the leetcode question provided generate the tags in the form of JSON format like this: {"tags":"[tag1, tag2]"}. The tags should be relevant to the question and only those tags should be given to the question that are most relevant to the question. Do not give more than 4 tags and these 4 tags should be the one that are most relevant to the question',
     });
     setPromptSession(prompter);
     console.log('prompt session updated'); // TODO: remove in production
@@ -131,6 +133,9 @@ const SingleNote = ({ questionName, setNotes, setShowNote }) => {
         placeholder={'Question summary'}
         value={isLoading ? 'Loading....' : summary}
         disabled={isLoading}
+        onChange={(e)=>{
+          setSummary(e.target?.value);
+        }}
       />
       <Textarea
         placeholder={'Question notes'}
@@ -145,7 +150,7 @@ const SingleNote = ({ questionName, setNotes, setShowNote }) => {
         maxRows={4}
         value={isLoading ? 'Loading...' : aiTags}
         onChange={(e) => {
-          console.log(e);
+          setAiTags(e.target?.value);
         }}
         disabled={isLoading}
       />

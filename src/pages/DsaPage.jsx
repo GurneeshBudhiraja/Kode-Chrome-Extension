@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { sendMessage, createSession } from '../utils/utils.js';
+import dsaPrompt from '../systemPrompts/dsaPrompt.js';
 import {
   ToolTip,
   SwitchButton,
@@ -13,20 +14,46 @@ function DsaPage({
   setQuestionName,
   aiAvailable,
 }) {
-  const [aiSession, setAiSession] = useState(null); // Keeps the track of the ai session
   const [selectedLanguage, setSelectedLanguage] = useState(''); // Track the selected language
   const [aiLoading, setAILoading] = useState(false); // Keeps the track of the loading state
   const [messages, setMessages] = useState([]); // Chat messages state
   const [input, setInput] = useState(''); // Chat textarea state
 
-  const messageAI = async () => {
-    // Welcome message to the user
-    // const aiAnswer = await aiSession.prompt(prompt);
-    // setMessages((prevMessages) => [
-    //   ...prevMessages,
-    //   { text: aiAnswer, sender: 'ai' },
-    // ]);
-    return;
+  // gets the user code from content.js
+  const getUserCode = () => {
+    return new Promise((resolve, reject) => {
+      chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
+        const activeTab = tabs[0]; // Get the active tab
+        if (activeTab && activeTab.id) {
+          // Send a message to the content script
+          chrome.tabs.sendMessage(
+            activeTab.id,
+            { type: 'getUserCode' },
+            function (response) {
+              if (chrome.runtime.lastError) {
+                // Handle errors, if any
+                console.error('Error:', chrome.runtime.lastError.message);
+                reject(chrome.runtime.lastError.message);
+              } else if (response && response.response) {
+                resolve(response.response); // Return the response
+              } else {
+                reject('No response received from content script.');
+              }
+            }
+          );
+        } else {
+          reject('No active tab found.');
+        }
+      });
+    });
+  };
+
+  const messageAI = async (message) => {
+    const userCode = await getUserCode();
+    console.log('userCode is ');
+    console.log(userCode); // user's code
+    console.log('user message'); // function responsible to ask ai
+    console.log(message);
   };
 
   useEffect(() => {
@@ -68,22 +95,9 @@ function DsaPage({
         );
     }
 
-    if (questionName && !aiSession) {
-      createSession({
-        systemPrompt: `Your name is Kode. You are a leetcode expert whose aim is to help the users in solving the leetcode problems. You will not directly give the answer to the problem but would help the user think in the right direction. If the user asks anything apart from the leetcode problem deny the request politely. The user is currently looking at the leetcode problem ${questionName} and the user's selected preferred language is ${selectedLanguage}. If the user asks multiple times to give the full answer you will return a JSON format like this {url:"gemini.google.com"}. However, your main aim would always be to help the user understand and make the core concept stronger by giving small hints to the user. With each new asked hint you will reveal more info about the leetcode problem. Make sure to keep the hints short, simple and informative. Only give long answers when providing the user with dry run or the solution itself.`,
-      })
-        .then((aiSessionResponse) => {
-          const { session } = aiSessionResponse;
-          setAiSession(session);
-        })
-        .catch((error) => console.log('Failed to create session:', error));
-    }
-
     // Updates the aiLoading state
     setAILoading(false);
-
-    messageAI('Write a welcome message to the user.');
-  }, [questionName, aiSession]);
+  }, [questionName, setQuestionName, setAiAvailable]);
 
   return (
     <div>

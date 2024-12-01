@@ -1,5 +1,5 @@
 - ✅ different section to show save leetcode questions
-- [ ] Add the Leetcode notes and save feature also generate tags using ai 
+- ✅ Add the Leetcode notes and save feature also generate tags using ai
 - [ ] Find similar leetcode questions
 - [ ] Mechanism to communicate b/w service worker and background.js
 - [ ] Fetch user written code from content script
@@ -16,3 +16,10 @@
 // CODE SNIPPETS
 
 1. document.querySelector(".CEgMp").innerText For getting the branch name
+
+2. for getting the input field of gemini.google.com 
+`const ele = document.querySelector("[data-placeholder='Ask Gemini']")`
+
+
+
+`const button = document.querySelectorAll(".send-button")`

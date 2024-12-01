@@ -1,5 +1,8 @@
 import { useState, useEffect, useRef } from 'react';
 import CircularProgress from '@mui/material/CircularProgress';
+import { sendContentMessage } from './componentUtils/componentUtils.js';
+
+import { sendMessage } from '../utils/utils.js';
 
 const Chat = ({
   aiLoading,
@@ -7,7 +10,7 @@ const Chat = ({
   setMessages,
   input,
   setInput,
-  messageAI,
+  messageAI, // TODO: use this after completing the functionality
 }) => {
   const lastMessageRef = useRef(null); // Reference to the last message
 
@@ -23,8 +26,14 @@ const Chat = ({
   const handleSend = () => {
     // Sends the message
     if (input.trim()) {
-      setMessages([...messages, { text: input, sender: 'user' }]);
-      messageAI(input);
+      if (input === 'full solution') {
+        setMessages([
+          ...messages,
+          { text: 'https://gemini.google.com/app', sender: 'ai' },
+        ]);
+      } else {
+        setMessages([...messages, { text: input, sender: 'user' }]);
+      }
       setInput('');
     }
   };
@@ -59,7 +68,46 @@ const Chat = ({
                     : 'bg-gray-800 text-gray-200'
                 }`}
               >
-                {message.text}
+                {message.text === 'https://gemini.google.com/app' ? (
+                  <div
+                    className="p-2 cursor-pointer"
+                    onClick={async () => {
+                      let questionName = '';
+                      const URLResponse = await sendMessage({
+                        type: 'getCurrentURL',
+                      });
+                      if (
+                        URLResponse?.url?.startsWith(
+                          'https://leetcode.com/problems/'
+                        )
+                      ) {
+                        questionName =
+                          URLResponse.url
+                            ?.split('https://leetcode.com/problems/')[1]
+                            ?.split('/')[0] ?? '';
+                      }
+
+                      const { response: userCode } = await sendContentMessage({
+                        type: 'getUserCode',
+                      });
+
+                      chrome.tabs.create({
+                        url: 'https://gemini.google.com/app',
+                      });
+                      setTimeout(async () => {
+                        await sendContentMessage({
+                          type: 'customizeGeminiPage',
+                          questionName,
+                          userCode,
+                        });
+                      }, 1000);
+                    }}
+                  >
+                    Full solution
+                  </div>
+                ) : (
+                  message.text
+                )}
               </div>
             </div>
           ))

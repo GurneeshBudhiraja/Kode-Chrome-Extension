@@ -1,8 +1,4 @@
-const createSummarizerSession = async ({
-  type = 'key-points',
-  format = 'markdown',
-  length = 'short',
-}) => {
+const createSummarizerSession = async ({ type, format, length }) => {
   const canSummarize = await ai.summarizer.capabilities();
   let summarizer;
   if (canSummarize && canSummarize.available !== 'no') {
