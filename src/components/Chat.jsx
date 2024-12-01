@@ -47,7 +47,7 @@ const Chat = ({
   };
 
   return (
-    <div className="flex flex-col mt-4 rounded-lg border border-gray-700 bg-gray-900/50 w-full h-full ">
+    <div className="flex flex-col my-4 rounded-lg border border-gray-700 bg-gray-900/50 w-full h-full ">
       <div className="flex-1 p-4 overflow-y-auto space-y-4">
         {aiLoading ? (
           <div className="h-full flex justify-center items-center">

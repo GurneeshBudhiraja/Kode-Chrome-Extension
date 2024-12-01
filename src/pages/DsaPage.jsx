@@ -1,5 +1,10 @@
-import { useState, useEffect } from 'react';
-import { sendMessage, createSession } from '../utils/utils.js';
+import { useState, useEffect, useRef } from 'react';
+import {
+  sendMessage,
+  createSession,
+  setLocalStorage,
+  getLocalStorage,
+} from '../utils/utils.js';
 import dsaPrompt from '../systemPrompts/dsaPrompt.js';
 import {
   ToolTip,
@@ -18,7 +23,7 @@ function DsaPage({
   const [aiLoading, setAILoading] = useState(false); // Keeps the track of the loading state
   const [messages, setMessages] = useState([]); // Chat messages state
   const [input, setInput] = useState(''); // Chat textarea state
-
+  const objectiveRef = useRef();
   // gets the user code from content.js
   const getUserCode = () => {
     return new Promise((resolve, reject) => {
@@ -95,6 +100,15 @@ function DsaPage({
         );
     }
 
+    // gets the user objective from the local storage
+    getLocalStorage({ param: 'objective' })
+      .then((objectiveResponse) => {
+        if (Object.keys(objectiveResponse).length && objectiveRef.current) {
+          objectiveRef.current.value = objectiveResponse['objective'];
+        }
+      })
+      .catch((error) => console.log('Failed to fetch the objective: ', error));
+
     // Updates the aiLoading state
     setAILoading(false);
   }, [questionName, setQuestionName, setAiAvailable]);
@@ -102,22 +116,39 @@ function DsaPage({
   return (
     <div>
       {aiAvailable ? (
-        questionName ? (
-          <div className="mt-3 space-y-4 flex flex-col mb-3">
-            <div className="flex justify-between items-center">
-              <div className="flex items-center">
-                <span className="text-focusmode-size text-white">
-                  Focus mode
-                </span>
-                <ToolTip title="Reminds you to return to LeetCode only if you're off-task for 10 minutes." />
-              </div>
-              <SwitchButton />
+        <div className="mt-3 space-y-4 flex flex-col mb-3">
+          <div className="flex justify-between items-center">
+            <div className="flex items-center">
+              <span className="text-focusmode-size text-white">Focus mode</span>
+              <ToolTip title="Reminds you to return to LeetCode only if you're off-task for 10 minutes." />
             </div>
-            <CodingLanguage
-              selectedLanguage={selectedLanguage}
-              setSelectedLanguage={setSelectedLanguage}
+            <SwitchButton />
+          </div>
+          <div>
+            <input
+              type="text"
+              placeholder="Enter the objective for today"
+              className=""
+              ref={objectiveRef}
             />
+            <button
+              className="p-2 cursor-pointer text-white bg-blue-900/85 "
+              onClick={async () => {
+                if (objectiveRef.current) {
+                  const objective = objectiveRef.current.value.trim();
+                  await setLocalStorage({ objective });
+                }
+              }}
+            >
+              Submit
+            </button>
+          </div>
+          {questionName ? (
             <div className="h-[420px]">
+              <CodingLanguage
+                selectedLanguage={selectedLanguage}
+                setSelectedLanguage={setSelectedLanguage}
+              />
               <Chat
                 aiLoading={aiLoading}
                 messageAI={messageAI}
@@ -127,12 +158,12 @@ function DsaPage({
                 setInput={setInput}
               />
             </div>
-          </div>
-        ) : (
-          <div className="text-[#F5F5F5] bg-[#1A1B23] absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-lg font-medium p-3 text-center border rounded-lg select-none w-5/6">
-            To use the Kode DSA, please open a LeetCode problem page.
-          </div>
-        )
+          ) : (
+            <div className="text-[#F5F5F5] bg-[#1A1B23] absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-lg font-medium p-3 text-center border rounded-lg select-none w-5/6">
+              To use the Kode DSA, please open a LeetCode problem page.
+            </div>
+          )}
+        </div>
       ) : (
         <div className="text-[#F5F5F5] bg-[#1A1B23] absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-lg font-medium p-3 text-center border rounded-lg select-none w-5/6">
           The extension is not supported on your current browser.

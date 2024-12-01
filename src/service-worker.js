@@ -114,10 +114,17 @@ let trackUserAiSession = null;
 
 const trackUser = async (tabDetails) => {
   const { url } = tabDetails;
+  let { objective: userObjective } = await getLocalStorage({
+    param: 'objective',
+  });
+  if (!Object.keys(userObjective).length) {
+    userObjective = 'leetcode problem/DSA ';
+  }
+  console.log('userObjective: ');
+  console.log(userObjective);
   if (!trackUserAiSession || trackUserAiSession?.tokensLeft < 50) {
     trackUserAiSession = await self.ai.languageModel.create({
-      systemPrompt:
-        'Your job is to identify by looking at the url of a website or the title and description of the youtube video to tell in JSON response whether this website or video is related to the following: leetcode problem, DSA, coding, programming or anything related to technology. The main goal of the user to focus on leetcode problems. So all the websites that does not contribute to leetcode problems should be considered as invalid. I will also have to show the user a message about reminding how this website is not related and the user should go back to the leetcode problem. The friendly message you would generate to inform the user how this is not relevant would be not longer than 1 sentence. Keep it short and you are free to include a small quote. The response would be in the following JSON format: "{"relevant":"false","userMessage":"some positive message reminding the user"}" or something like this too "{"relevant":"true","userMessage":""(no message is required as the relevant is true)}". If the relevant is false, inform the user with a one line message that this is not relevant with a small one line positive quote. Be playful with this like did you like your x minutes break how about hitting some more leetcode questions something like this. One thing to keep in mind is to keep the userMessage as empty string when the relevant is true',
+      systemPrompt: `Your job is to identify by looking at the url of a website or the title and description of the youtube video to tell in JSON response whether this website or video is related to the following: ${userObjective} The main goal of the user to focus on leetcode problems. So all the websites that does not contribute to leetcode problems should be considered as invalid. I will also have to show the user a message about reminding how this website is not related and the user should go back to completing the objective set by the user which is ${userObjective}. The friendly message you would generate to inform the user how this is not relevant would be not longer than 1 sentence. Keep it short and you are free to include a small quote. The response would be in the following JSON format: "{"relevant":"false","userMessage":"some positive message reminding the user", "reason":"reason for it to not being relevant"}" or something like this too "{"relevant":"true","userMessage":""(no message is required as the relevant is true), "reason":"reason for why it is relevant."}". If the relevant is false, inform the user with a one line message that this is not relevant to the ${userObjective} with a small one line positive quote.`,
     });
   }
   clearTimeout(trackUserTimeoutID);
@@ -138,5 +145,5 @@ const trackUser = async (tabDetails) => {
       const aiResponse = await trackUserAiSession.prompt(`${url}`);
       console.log(aiResponse);
     }
-  }, 1000);
+  }, 3000);
 };
