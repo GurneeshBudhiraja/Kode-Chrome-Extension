@@ -4,8 +4,14 @@ import {
   createSession,
   setLocalStorage,
   getLocalStorage,
+  sendContentMessage,
 } from '../utils/utils.js';
-import dsaPrompt from '../systemPrompts/dsaPrompt.js';
+import {
+  dsaAgentPrompt,
+  agentHeadPrompt,
+  recommendationAgentPrompt,
+  nonCodingAgentPrompt,
+} from '../systemPrompts/dsaPrompts/dsaPrompts.js';
 import {
   ToolTip,
   SwitchButton,
@@ -20,50 +26,97 @@ function DsaPage({
   aiAvailable,
 }) {
   const [selectedLanguage, setSelectedLanguage] = useState(''); // Track the selected language
-  const [aiLoading, setAILoading] = useState(false); // Keeps the track of the loading state
+  const [loading, setLoading] = useState(false); // Keeps the track of the loading state
   const [messages, setMessages] = useState([]); // Chat messages state
   const [input, setInput] = useState(''); // Chat textarea state
   const objectiveRef = useRef();
+  const [agentHeadSession, setAgentHeadSession] = useState(null);
+  const [dsaAgentSession, setDsaAgentSession] = useState(null);
+  const [recommendationAgentSession, setRecommendationAgentSession] =
+    useState(null);
+  const [nonCodingAgentSession, setNonCodingAgentSession] = useState(null);
+
   // gets the user code from content.js
-  const getUserCode = () => {
-    return new Promise((resolve, reject) => {
-      chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
-        const activeTab = tabs[0]; // Get the active tab
-        if (activeTab && activeTab.id) {
-          // Send a message to the content script
-          chrome.tabs.sendMessage(
-            activeTab.id,
-            { type: 'getUserCode' },
-            function (response) {
-              if (chrome.runtime.lastError) {
-                // Handle errors, if any
-                console.error('Error:', chrome.runtime.lastError.message);
-                reject(chrome.runtime.lastError.message);
-              } else if (response && response.response) {
-                resolve(response.response); // Return the response
-              } else {
-                reject('No response received from content script.');
-              }
-            }
-          );
-        } else {
-          reject('No active tab found.');
-        }
+  const getUserCode = async () => {
+    try {
+      const { response } = await sendContentMessage({
+        type: 'getUserCode',
       });
-    });
+      return response ?? '';
+    } catch (error) {
+      console.log('Failed to fetch the user code:', error);
+    }
   };
 
+  // Send message to the promptAPI
   const messageAI = async (message) => {
+    
+    // Gets the current user code
     const userCode = await getUserCode();
-    console.log('userCode is ');
-    console.log(userCode); // user's code
-    console.log('user message'); // function responsible to ask ai
-    console.log(message);
+    console.log('User Code:');
+    console.log(userCode);
+
+    console.log('Getting the response from the head');
+    const resp = await agentHeadSession.prompt(message);
+    console.log('Response:');
+    console.log(resp);
+  };
+
+  const activateAI = async () => {
+    try {
+      const headPrompt = agentHeadPrompt();
+      const dsaPrompt = dsaAgentPrompt(questionName, selectedLanguage);
+      const recommendationPrompt = recommendationAgentPrompt();
+      const nonCodingPrompt = nonCodingAgentPrompt();
+
+      const headSession = await createSession({
+        systemPrompt: headPrompt,
+      });
+
+      const dsaSession = await createSession({ systemPrompt: dsaPrompt });
+
+      const recommendationSession = await createSession({
+        systemPrompt: recommendationPrompt,
+      });
+
+      const nonCodingSession = await createSession({
+        systemPrompt: nonCodingPrompt,
+      });
+
+      // Checks the array has all the valid session object
+      const arr = [
+        headSession,
+        dsaSession,
+        recommendationSession,
+        nonCodingSession,
+      ];
+      arr.map((obj) => {
+        if (!Object.keys(obj).length) {
+          console.log('Empty prompt session object');
+          return;
+        }
+      });
+
+      const { session: hSession } = headSession;
+      setAgentHeadSession(hSession);
+
+      const { session: dSession } = dsaSession;
+      setDsaAgentSession(dSession);
+
+      const { session: rSession } = recommendationSession;
+      setRecommendationAgentSession(rSession);
+
+      const { session: ncSession } = nonCodingSession;
+      setNonCodingAgentSession(ncSession);
+    } catch (error) {
+      console.log('Failed to activate the prompt AI in DsaPage.jsx:', error);
+      return;
+    }
   };
 
   useEffect(() => {
     // Sets the aiLoading state
-    setAILoading(true);
+    setLoading(true);
 
     // Checking if the browser supports the ai features
     if (!self.ai || !self.ai.languageModel) {
@@ -89,11 +142,7 @@ function DsaPage({
     if (questionName) {
       sendMessage({ type: 'getPreferredLanguage' })
         .then((languageResponse) => {
-          console.log('LANGUAGE RESPONSE IS ');
-          console.log(languageResponse);
-          languageResponse.language
-            ? setSelectedLanguage(languageResponse.language)
-            : setSelectedLanguage('');
+          setSelectedLanguage(languageResponse.language ?? '');
         })
         .catch((error) =>
           console.log('Failed to fetch coding language:', error)
@@ -109,9 +158,11 @@ function DsaPage({
       })
       .catch((error) => console.log('Failed to fetch the objective: ', error));
 
-    // Updates the aiLoading state
-    setAILoading(false);
-  }, [questionName, setQuestionName, setAiAvailable]);
+    activateAI();
+
+    // Updates the loading state
+    setLoading(false);
+  }, [questionName, selectedLanguage, setAiAvailable, setQuestionName]);
 
   return (
     <div>
@@ -150,7 +201,7 @@ function DsaPage({
                 setSelectedLanguage={setSelectedLanguage}
               />
               <Chat
-                aiLoading={aiLoading}
+                loading={loading}
                 messageAI={messageAI}
                 messages={messages}
                 setMessages={setMessages}

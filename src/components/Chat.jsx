@@ -4,7 +4,7 @@ import CircularProgress from '@mui/material/CircularProgress';
 import { sendMessage, sendContentMessage } from '../utils/utils.js';
 
 const Chat = ({
-  aiLoading,
+  loading,
   messages,
   setMessages,
   input,
@@ -35,6 +35,7 @@ const Chat = ({
       }
       setInput('');
     }
+    messageAI(input);
   };
 
   const handleKeyDown = (e) => {
@@ -48,7 +49,7 @@ const Chat = ({
   return (
     <div className="flex flex-col my-4 rounded-lg border border-gray-700 bg-gray-900/50 w-full h-full ">
       <div className="flex-1 p-4 overflow-y-auto space-y-4">
-        {aiLoading ? (
+        {loading ? (
           <div className="h-full flex justify-center items-center">
             <CircularProgress />
           </div>
@@ -119,7 +120,7 @@ const Chat = ({
           <textarea
             autoFocus
             value={input}
-            disabled={aiLoading}
+            disabled={loading}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={handleKeyDown}
             placeholder="Type your message..."
