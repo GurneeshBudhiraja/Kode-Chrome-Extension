@@ -7,8 +7,8 @@ import {
   sendContentMessage,
 } from '../utils/utils.js';
 import {
-  dsaAgentPrompt,
   agentHeadPrompt,
+  dsaAgentPrompt,
   recommendationAgentPrompt,
   nonCodingAgentPrompt,
 } from '../systemPrompts/dsaPrompts/dsaPrompts.js';
@@ -50,19 +50,33 @@ function DsaPage({
 
   // Send message to the promptAPI
   const messageAI = async (message) => {
-    // Gets the current user code
-    const userCode = await getUserCode();
-    console.log('User Code:');
-    console.log(userCode);
+    try {
+      // Gets the current user code
+      const userCode = await getUserCode();
+      console.log('User Code:');
+      console.log(userCode);
 
-    console.log('Getting the response from the head');
-    const headAgentResp = await agentHeadSession.prompt(message);
+      console.log('Getting the response from the head');
+      const headAgentResp = await agentHeadSession.prompt(message);
 
-    const validJson = headAgentResp.replace(/'/g, '"');
+      const validJson = headAgentResp.replace(/'/g, '"');
 
-    const { agent } = JSON.parse(validJson);
+      const { agent } = JSON.parse(validJson);
+      console.log('AGENT SELECTED FOR THE MESSAGE IS:', agent);
 
-    console.log(agent);
+      if (agent === 'dsaAgent') {
+        const resp = await dsaAgentSession.prompt(message);
+        console.log(resp);
+      } else if (agent === 'DSARecommendationAgent') {
+        const resp = await recommendationAgentSession.prompt(message);
+        console.log(resp);
+      } else if (agent === 'nonCodingAgent') {
+        const resp = await nonCodingAgentSession.prompt(message);
+        console.log(resp);
+      }
+    } catch (error) {
+      console.log('Failed to message AI:', error);
+    }
   };
 
   const activateAI = async () => {
