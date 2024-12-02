@@ -4,29 +4,47 @@ import { useState, useEffect } from 'react';
 import { sendMessage } from './utils/utils.js';
 
 function App() {
-  const [aiAvailable, setAiAvailable] = useState(true); // Checks whether the browser supports the ai features
+  const [aiAvailable, setAiAvailable] = useState(true); // Tracks whether the browser supports the ai features
   const [questionName, setQuestionName] = useState(''); // Current leetcode question the user is on
-  const [currentPage, setCurrentPage] = useState('dsa');
+  const [currentPage, setCurrentPage] = useState('dsa'); // Tracks the current menu option selected
+
+  // Pages supported by the extension
+  const pages = {
+    dsa: (
+      <DsaPage
+        aiAvailable={aiAvailable}
+        setAiAvailable={setAiAvailable}
+        questionName={questionName}
+        setQuestionName={setQuestionName}
+      />
+    ),
+    notes: <NotesPage questionName={questionName} />,
+  };
+
+  // Gets the current tab info from the service-worker.js and validates if the url is a valid leetcode question url
+  const getCurrentTab = async () => {
+    try {
+      const URLResponse = await sendMessage({ type: 'getCurrentURL' });
+      if (URLResponse?.url?.startsWith('https://leetcode.com/problems/')) {
+        setQuestionName(
+          URLResponse.url
+            ?.split('https://leetcode.com/problems/')[1]
+            ?.split('/')[0] ?? ''
+        );
+      }
+    } catch (error) {
+      console.log('Failed to fetch URL:', error);
+    }
+  };
 
   useEffect(() => {
-    // Checking if the browser supports the ai features
+    // Checks if the browser supports the built in ai features
     if (!self.ai || !self.ai.languageModel) {
       setAiAvailable(false);
+      return;
     }
 
-    // Gets the current tab info and validates the valid LeetCode question URL
-    sendMessage({ type: 'getCurrentURL' })
-      .then((URLResponse) => {
-        if (URLResponse?.url?.startsWith('https://leetcode.com/problems/')) {
-          console.log(URLResponse);
-          setQuestionName(
-            URLResponse.url
-              ?.split('https://leetcode.com/problems/')[1]
-              ?.split('/')[0] ?? ''
-          );
-        }
-      })
-      .catch((error) => console.log('Failed to fetch URL:', error));
+    getCurrentTab();
   }, [questionName, aiAvailable, currentPage]);
 
   return (
@@ -41,15 +59,7 @@ function App() {
         Amplifying Potential
       </div>
       <OptionBar currentPage={currentPage} setCurrentPage={setCurrentPage} />
-      {currentPage === 'dsa' && (
-        <DsaPage
-          aiAvailable={aiAvailable}
-          setAiAvailable={setAiAvailable}
-          questionName={questionName}
-          setQuestionName={setQuestionName}
-        />
-      )}
-      {currentPage === 'notes' && <NotesPage questionName={questionName} />}
+      {pages[currentPage] || null}
     </div>
   );
 }
