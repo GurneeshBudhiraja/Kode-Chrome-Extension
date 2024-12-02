@@ -166,7 +166,7 @@ function DsaPage({
         </div>
       ) : (
         <div className="text-[#F5F5F5] bg-[#1A1B23] absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-lg font-medium p-3 text-center border rounded-lg select-none w-5/6">
-          The extension is not supported on your current browser.
+          The Kode DSA is not supported on your current browser.
         </div>
       )}
     </div>
