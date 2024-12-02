@@ -7,9 +7,7 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
     const questionDescription = document.querySelector(
       '[data-track-load="description_content"]'
     )?.textContent;
-    console.log('QUESTION DESCRIPTION');
-    console.log(questionDescription);
-    sendResponse({ response: questionDescription });
+    sendResponse({ questionDescription });
   } else if (message.type === 'getUserCode') {
     const nodeList = document.querySelectorAll('.view-line');
 

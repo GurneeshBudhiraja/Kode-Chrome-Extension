@@ -30,9 +30,13 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 
   if (request.type === 'getFocusMode') {
     // Gets the focus mode from the local storage
-    getLocalStorage({ param: 'isFocusMode' }).then((focusMode) => {
-      sendResponse(focusMode);
-    });
+    getLocalStorage({ param: 'isFocusMode' })
+      .then((focusMode) => {
+        sendResponse(focusMode);
+      })
+      .catch((error) =>
+        console.log('Failed to fetch focusMode from the local storage: ', error)
+      );
   } else if (request.type === 'getHints') {
     // Get hints from the local storage
     const { questionName } = request;
@@ -82,7 +86,6 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     }
   } else if (request.type === 'updateFocusMode') {
     if (request.value === false) {
-      console.log('request.value is false'); // TODO: remove this in production
       monitorUser = false;
       clearTimeout(monitorUserTimeoutID);
     }

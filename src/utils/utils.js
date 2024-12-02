@@ -4,7 +4,9 @@ import HintTemplate from './HintTemplate';
 import getCurrentTab from './getCurrenttab';
 import sendMessage from './sendMessage';
 import createSession from './createSession.js';
-
+import sendContentMessage from './sendContentMessage.js';
+import createSummarizerSession from './createSummarizerSession.js';
+import createPromptSession from './createPromptSession.js';
 export {
   setLocalStorage,
   getLocalStorage,
@@ -12,4 +14,7 @@ export {
   getCurrentTab,
   sendMessage,
   createSession,
+  sendContentMessage,
+  createSummarizerSession,
+  createPromptSession,
 };

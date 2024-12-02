@@ -1,8 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import CircularProgress from '@mui/material/CircularProgress';
-import { sendContentMessage } from './componentUtils/componentUtils.js';
 
-import { sendMessage } from '../utils/utils.js';
+import { sendMessage, sendContentMessage } from '../utils/utils.js';
 
 const Chat = ({
   aiLoading,

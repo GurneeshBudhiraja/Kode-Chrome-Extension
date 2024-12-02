@@ -6,16 +6,14 @@ function SwitchButton() {
   const [checked, setChecked] = useState(false);
 
   useEffect(() => {
-    // fetch the status of the focus mode from the local storage
+    // Fetch the status of the focus mode from the local storage
     fetchFocusMode();
     if (checked) {
-      console.log('monitoring user');
       sendMessage({ type: 'monitorUser' });
     } else {
-      console.log('unmonitoring user');
       sendMessage({ type: 'unmonitorUser' });
     }
-  }, [checked]);
+  }, [checked, setChecked]);
 
   // Message to service-worker for the status of the focus mode
   const fetchFocusMode = async () => {
@@ -27,27 +25,33 @@ function SwitchButton() {
     }
   };
 
+  const switchChanged = async () => {
+    try {
+      // Sends message to the service-worker to update the value of the focus mode in the local storage
+      setChecked(!checked);
+      await sendMessage({
+        type: 'updateFocusMode',
+        value: !checked,
+      });
+    } catch (error) {
+      console.log('Failed to update the focus mode: ', error);
+    }
+  };
+
   return (
-    <Switch
-      checked={checked}
-      onChange={async () => {
-        try {
-          setChecked(!checked);
-          await sendMessage({
-            type: 'updateFocusMode',
-            value: !checked,
-          });
-        } catch (error) {
-          console.log('Failed to update the focus mode: ', error);
-        }
-      }}
-      // Change the background color of the switch to gray
-      sx={{
-        '& .MuiSwitch-track': {
-          backgroundColor: 'gray',
-        },
-      }}
-    />
+    // Switch component with gray background color
+    <>
+      <Switch
+        checked={checked}
+        onChange={switchChanged}
+        // Gray background color of the switch
+        sx={{
+          '& .MuiSwitch-track': {
+            backgroundColor: 'gray',
+          },
+        }}
+      />
+    </>
   );
 }
 
