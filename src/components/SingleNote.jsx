@@ -6,9 +6,12 @@ import {
   createSummarizerSession,
   createPromptSession,
   sendContentMessage,
+  getCurrentTab,
 } from '../utils/utils.js';
 
-const SingleNote = ({ questionName, setNotes, setShowNote }) => {
+const SingleNote = ({ setNotes, setShowNote }) => {
+  const [questionName, setQuestionName] = useState('');
+
   const [isLoading, setIsLoading] = useState(true);
   // Summarized value of the question description
   const [questionSummary, setQuestionSummary] = useState('');
@@ -19,6 +22,12 @@ const SingleNote = ({ questionName, setNotes, setShowNote }) => {
 
   const generateQuestionDescription = async () => {
     try {
+      const { url } = await getCurrentTab();
+      if (url && url.startsWith('https://leetcode.com/problems/')) {
+        setQuestionName(
+          url.split('https://leetcode.com/problems/')[1]?.split('/')[0] ?? ''
+        );
+      }
       const { questionDescription } = await sendContentMessage({
         type: 'getQuestionDescription',
       });
