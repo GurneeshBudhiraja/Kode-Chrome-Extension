@@ -11,8 +11,6 @@ function NotesPage({ questionName }) {
   // Gets notes from the service-worker.js
   async function getNotes() {
     const notesData = await sendMessage({ type: 'getNotes' });
-    console.log('notesData is: ');
-    console.log(notesData);
     if (!Object.keys(notesData).length) {
       setNotes([]);
     } else {
@@ -26,6 +24,7 @@ function NotesPage({ questionName }) {
     setLoading(true);
     getNotes();
 
+    // Resets the state on the component unmount
     return () => {
       setNotes([]);
       setLoading(false);
@@ -49,9 +48,7 @@ function NotesPage({ questionName }) {
           </span>
         </div>
       )}
-      {showNote && (
-        <SingleNote questionName={questionName} setNotes={setNotes} setShowNote={setShowNote} />
-      )}
+      {showNote && <SingleNote setNotes={setNotes} setShowNote={setShowNote} />}
       {loading && <div className="text-white">Loading...</div>}
       {!loading && notes.length
         ? notes.map((note, index) => (

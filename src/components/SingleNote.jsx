@@ -22,12 +22,19 @@ const SingleNote = ({ setNotes, setShowNote }) => {
 
   const generateQuestionDescription = async () => {
     try {
+      // Getting current tab info
       const { url } = await getCurrentTab();
-      if (url && url.startsWith('https://leetcode.com/problems/')) {
-        setQuestionName(
-          url.split('https://leetcode.com/problems/')[1]?.split('/')[0] ?? ''
-        );
+
+      // Checks if the URL is a valid leetcode question or not
+      if (!url || !url.startsWith('https://leetcode.com/problems/')) {
+        return;
       }
+      // Updates the state with the leetcode question name
+      setQuestionName(
+        url.split('https://leetcode.com/problems/')[1]?.split('/')[0] ?? ''
+      );
+
+      // Gets the question description from contentScript.js
       const { questionDescription } = await sendContentMessage({
         type: 'getQuestionDescription',
       });
@@ -112,39 +119,42 @@ const SingleNote = ({ setNotes, setShowNote }) => {
 
   return (
     <>
-      <Textarea defaultValue={questionName} placeholder={'Question name'} />
-      {/* Will be completed by ai */}
-      <Textarea
-        placeholder={'Question summary'}
-        value={isLoading ? 'Loading....' : questionSummary}
-        disabled={isLoading}
-        onChange={(e) => {
-          setQuestionSummary(e.target?.value);
-        }}
-      />
-      <Textarea
-        placeholder={'Question notes'}
-        maxRows={9}
-        value={questionNotes}
-        onChange={(e) => setQuestionNotes(e.target?.value)}
-      />
-      <Textarea
-        placeholder={'Question tags'}
-        minRows={0}
-        maxRows={4}
-        value={isLoading ? 'Loading...' : questionTags}
-        onChange={(e) => {
-          setQuestionTags(e.target?.value);
-        }}
-        disabled={isLoading}
-      />
-      <button
-        disabled={isLoading}
-        className="text-white bg-blue-300 disabled:bg-gray-400 disabled:cursor-not-allowed cursor-pointer p-2 font-semibold"
-        onClick={saveNote}
-      >
-        Submit
-      </button>
+      {questionName ? (
+        <div>
+          <Textarea defaultValue={questionName} placeholder={'Question name'} />
+          <Textarea
+            placeholder={'Question summary'}
+            value={isLoading ? 'Loading....' : questionSummary}
+            disabled={isLoading}
+            onChange={(e) => {
+              setQuestionSummary(e.target?.value);
+            }}
+          />
+          <Textarea
+            placeholder={'Question notes'}
+            maxRows={9}
+            value={questionNotes}
+            onChange={(e) => setQuestionNotes(e.target?.value)}
+          />
+          <Textarea
+            placeholder={'Question tags'}
+            minRows={0}
+            maxRows={4}
+            value={isLoading ? 'Loading...' : questionTags}
+            onChange={(e) => {
+              setQuestionTags(e.target?.value);
+            }}
+            disabled={isLoading}
+          />
+          <button
+            disabled={isLoading}
+            className="text-white bg-blue-300 disabled:bg-gray-400 disabled:cursor-not-allowed cursor-pointer p-2 font-semibold"
+            onClick={saveNote}
+          >
+            Submit
+          </button>
+        </div>
+      ) : null}
     </>
   );
 };

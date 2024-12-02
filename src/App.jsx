@@ -1,7 +1,7 @@
 import { DsaPage, NotesPage } from './pages/pages.js';
-import { OptionBar, Note } from './components/components.js';
+import { OptionBar } from './components/components.js';
 import { useState, useEffect } from 'react';
-import { sendMessage } from './utils/utils.js';
+import { getCurrentTab } from './utils/utils.js';
 
 function App() {
   const [aiAvailable, setAiAvailable] = useState(true); // Tracks whether the browser supports the ai features
@@ -21,10 +21,11 @@ function App() {
     notes: <NotesPage questionName={questionName} />,
   };
 
-  // Gets the current tab info from the service-worker.js and validates if the url is a valid leetcode question url
-  const getCurrentTab = async () => {
+  // Gets the current tab info and validates if the url is a valid leetcode question url
+  const fetchCodingQuestion = async () => {
     try {
-      const URLResponse = await sendMessage({ type: 'getCurrentURL' });
+      const URLResponse = await getCurrentTab();
+
       if (URLResponse?.url?.startsWith('https://leetcode.com/problems/')) {
         setQuestionName(
           URLResponse.url
@@ -44,7 +45,7 @@ function App() {
       return;
     }
 
-    getCurrentTab();
+    fetchCodingQuestion();
   }, [questionName, aiAvailable, currentPage]);
 
   return (

@@ -1,7 +1,6 @@
 import {
   getLocalStorage,
   setLocalStorage,
-  getCurrentTab,
   HintTemplate,
 } from './utils/utils.js';
 
@@ -52,9 +51,6 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
         sendResponse(hintResponse);
       }
     });
-  } else if (request.type === 'getCurrentURL') {
-    // Gets the current tab info of the user
-    getCurrentTab().then((tab) => sendResponse(tab));
   } else if (request.type === 'getPreferredLanguage') {
     // Gets the preferred coding language from the local storage
 
