@@ -50,16 +50,19 @@ function DsaPage({
 
   // Send message to the promptAPI
   const messageAI = async (message) => {
-    
     // Gets the current user code
     const userCode = await getUserCode();
     console.log('User Code:');
     console.log(userCode);
 
     console.log('Getting the response from the head');
-    const resp = await agentHeadSession.prompt(message);
-    console.log('Response:');
-    console.log(resp);
+    const headAgentResp = await agentHeadSession.prompt(message);
+
+    const validJson = headAgentResp.replace(/'/g, '"');
+
+    const { agent } = JSON.parse(validJson);
+
+    console.log(agent);
   };
 
   const activateAI = async () => {
