@@ -111,6 +111,7 @@ chrome.tabs.onActivated.addListener(({ tabId }) => {
 let trackUserTimeoutID = null;
 let trackUserAiSession = null;
 
+// For the focus mode
 const trackUser = async (tabDetails) => {
   const { url } = tabDetails;
   let { objective: userObjective } = await getLocalStorage({
