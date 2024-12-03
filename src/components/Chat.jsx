@@ -112,29 +112,6 @@ const Chat = ({
             </div>
           ))
         )}
-        {/* Reference to the end of the chat screen */}
-        <div ref={lastMessageRef} />
-      </div>
-      <div className="border-t border-gray-700 p-4">
-        <div className="flex items-center space-x-2 h-full ">
-          <textarea
-            autoFocus
-            value={input}
-            disabled={loading}
-            onChange={(e) => setInput(e.target.value)}
-            onKeyDown={handleKeyDown}
-            placeholder="Type your message..."
-            className="flex-1 bg-gray-800 text-gray-200 rounded-lg p-3 min-h-[44px] resize-none border border-gray-700 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none disabled:cursor-not-allowed"
-            rows={1}
-          />
-          <button
-            onClick={handleSend}
-            disabled={!input.trim()}
-            className="h-full px-4 py-2 bg-blue-600 text-white rounded-lg disabled:hover:bg-blue-600 hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            Send
-          </button>
-        </div>
       </div>
     </div>
   );

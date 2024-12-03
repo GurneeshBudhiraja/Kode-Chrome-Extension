@@ -5,6 +5,7 @@ import Chat from './Chat.jsx';
 import OptionBar from './OptionBar.jsx';
 import Note from './Note.jsx';
 import SingleNote from './SingleNote.jsx';
+import InputField from './InputField.jsx';
 
 export {
   ToolTip,
@@ -14,4 +15,5 @@ export {
   OptionBar,
   Note,
   SingleNote,
+  InputField,
 };

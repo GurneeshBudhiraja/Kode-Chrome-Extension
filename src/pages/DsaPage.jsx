@@ -27,8 +27,8 @@ function DsaPage({
 }) {
   const [selectedLanguage, setSelectedLanguage] = useState(''); // Track the selected language
   const [loading, setLoading] = useState(false); // Keeps the track of the loading state
-  const [messages, setMessages] = useState([]); // Chat messages state
   const [input, setInput] = useState(''); // Chat textarea state
+  const [messages, setMessages] = useState([]); // Chat messages state
   const objectiveRef = useRef();
   const [agentHeadSession, setAgentHeadSession] = useState(null);
   const [dsaAgentSession, setDsaAgentSession] = useState(null);

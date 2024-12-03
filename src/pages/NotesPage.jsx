@@ -34,7 +34,7 @@ function NotesPage({ questionName }) {
   return (
     <div>
       {questionName && (
-        <div className="text-end">
+        <div className="text-end mb-4">
           <span
             className=""
             onClick={() => {
@@ -48,19 +48,23 @@ function NotesPage({ questionName }) {
           </span>
         </div>
       )}
-      {showNote && <SingleNote setNotes={setNotes} setShowNote={setShowNote} />}
-      {loading && <div className="text-white">Loading...</div>}
-      {!loading && notes.length
-        ? notes.map((note, index) => (
-            <Note
-              key={index}
-              questionName={note.questionName}
-              descripton={note.descripton}
-              userNote={note.userNote}
-              tags={note.tags}
-            />
-          ))
-        : ''}
+      <div className="max-h-[29rem] max-w-4xl overflow-scroll border border-gray-400 rounded-lg p-2 space-y-2 ">
+        {showNote && (
+          <SingleNote setNotes={setNotes} setShowNote={setShowNote} />
+        )}
+        {loading && <div className="text-white">Fetching the notes...</div>}
+        {!loading && notes.length
+          ? notes.map((note, index) => (
+              <Note
+                key={index}
+                questionName={note.questionName}
+                descripton={note.descripton}
+                userNote={note.userNote}
+                tags={note.tags}
+              />
+            ))
+          : null}
+      </div>
     </div>
   );
 }

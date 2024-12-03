@@ -1,8 +1,10 @@
+import AllInclusiveIcon from '@mui/icons-material/AllInclusive';
+
 function OptionBar({ currentPage, setCurrentPage }) {
   const options = [
     {
-      title: 'DSA',
-      id: 'dsa',
+      title: <AllInclusiveIcon />,
+      id: 'infinite',
     },
     {
       title: 'Notes',

@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import Textarea from '@mui/joy/Textarea';
+import Button from '@mui/material/Button';
 import {
   setLocalStorage,
   getLocalStorage,
@@ -120,12 +121,29 @@ const SingleNote = ({ setNotes, setShowNote }) => {
   return (
     <>
       {questionName ? (
-        <div>
-          <Textarea defaultValue={questionName} placeholder={'Question name'} />
+        <div className="flex flex-col p-2 border border-gray-600/45 rounded-lg gap-2 bg-[#1a1a2ba4]">
+          <Textarea
+            defaultValue={questionName}
+            placeholder={'Question name'}
+            sx={{
+              backgroundColor: 'black',
+              color: 'white',
+              fontSize: '1rem',
+              fontFamily: 'Inter',
+              padding: '8px',
+            }}
+          />
           <Textarea
             placeholder={'Question summary'}
-            value={isLoading ? 'Loading....' : questionSummary}
+            value={isLoading ? 'Generating....' : questionSummary}
             disabled={isLoading}
+            sx={{
+              backgroundColor: 'black',
+              color: 'white',
+              fontSize: '1rem',
+              fontFamily: 'Inter',
+              padding: '8px',
+            }}
             onChange={(e) => {
               setQuestionSummary(e.target?.value);
             }}
@@ -135,24 +153,38 @@ const SingleNote = ({ setNotes, setShowNote }) => {
             maxRows={9}
             value={questionNotes}
             onChange={(e) => setQuestionNotes(e.target?.value)}
+            sx={{
+              backgroundColor: 'black',
+              color: 'white',
+              fontSize: '1rem',
+              fontFamily: 'Inter',
+              padding: '8px',
+            }}
           />
           <Textarea
             placeholder={'Question tags'}
             minRows={0}
             maxRows={4}
-            value={isLoading ? 'Loading...' : questionTags}
+            value={isLoading ? 'Generating...' : questionTags}
             onChange={(e) => {
               setQuestionTags(e.target?.value);
             }}
             disabled={isLoading}
+            sx={{
+              backgroundColor: 'black',
+              color: 'white',
+              fontSize: '1rem',
+              fontFamily: 'Inter',
+              padding: '8px',
+            }}
           />
-          <button
+          <Button
             disabled={isLoading}
-            className="text-white bg-blue-300 disabled:bg-gray-400 disabled:cursor-not-allowed cursor-pointer p-2 font-semibold"
+            className="cursor-pointer p-1 font-semibold"
             onClick={saveNote}
           >
             Submit
-          </button>
+          </Button>
         </div>
       ) : null}
     </>
