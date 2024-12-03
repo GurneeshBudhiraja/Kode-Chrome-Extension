@@ -46,7 +46,7 @@ function App() {
     }
 
     fetchCodingQuestion();
-  }, [questionName, aiAvailable]);
+  }, [questionName, aiAvailable, selectedTool]);
 
   return (
     <div className="w-screen h-screen bg-extension-background-gradient py-4 px-6 overflow-scroll">
@@ -62,11 +62,11 @@ function App() {
         </div>
       </div>
       <div>{pages[selectedTool] ?? ''}</div>
-      <div className="absolute bottom-3 ">
+      <div className="flex flex-col items-start justify-between gap-2">
         <select
           name="tools"
           id="tools"
-          className=""
+          className="bg-black/30 text-gray-200 text-sm px-3 p-2 rounded-lg border border-gray-700 focus:outline-none focus:ring-1 focus:ring-blue-500"
           onChange={(e) => setSelectedTool(e.target.value)}
         >
           <option value="" selected disabled hidden>
@@ -77,7 +77,7 @@ function App() {
           <option value="github">Github</option>
           <option value="recommendation">Recommendation</option>
         </select>
-        <InputField />
+        {selectedTool === 'notes' ? null : <InputField />}
       </div>
     </div>
   );

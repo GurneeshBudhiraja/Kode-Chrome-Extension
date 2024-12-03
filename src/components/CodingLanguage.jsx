@@ -32,7 +32,7 @@ const CodingLanguage = ({ selectedLanguage, setSelectedLanguage }) => {
         id="language"
         value={selectedLanguage}
         onChange={updateLanguage}
-        className="bg-gray-800 text-gray-300 border border-gray-600 rounded px-4 py-2 w-full"
+        className="bg-gray-800 text-gray-300 border border-gray-600 rounded px-4 py-2 w-full mb-4"
       >
         <option value="" disabled hidden>
           Select a programming language

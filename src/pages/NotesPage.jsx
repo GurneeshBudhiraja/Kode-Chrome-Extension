@@ -48,7 +48,7 @@ function NotesPage({ questionName }) {
           </span>
         </div>
       )}
-      <div className="max-h-[29rem] max-w-4xl overflow-scroll border border-gray-400 rounded-lg p-2 space-y-2 ">
+      <div className="h-[27rem] max-w-4xl overflow-scroll border border-gray-400 rounded-lg p-2 space-y-2 mb-4 ">
         {showNote && (
           <SingleNote setNotes={setNotes} setShowNote={setShowNote} />
         )}

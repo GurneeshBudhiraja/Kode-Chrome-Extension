@@ -38,16 +38,10 @@ const Chat = ({
     messageAI(input);
   };
 
-  const handleKeyDown = (e) => {
-    // Listens for the Enter key when shift key is not pressed
-    if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault();
-      handleSend();
-    }
-  };
+  
 
   return (
-    <div className="flex flex-col my-4 rounded-lg border border-gray-700 bg-gray-900/50 w-full h-full ">
+    <div className="flex flex-col rounded-lg border border-gray-700 bg-gray-900/50 w-full h-[19rem] ">
       <div className="flex-1 p-4 overflow-y-auto space-y-4">
         {loading ? (
           <div className="h-full flex justify-center items-center">
