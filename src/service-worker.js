@@ -136,37 +136,64 @@ function selectElementLeetcode(tabInfo) {
 let trackUserTimeoutID = null;
 let trackUserAiSession = null;
 const trackUser = async (tabDetails) => {
-  const { url } = tabDetails;
-  let { objective: userObjective } = await getLocalStorage({
-    param: 'objective',
-  });
-  if (!Object.keys(userObjective).length) {
-    userObjective = 'leetcode problem/DSA ';
-  }
-  console.log('userObjective: ');
-  console.log(userObjective);
-  if (!trackUserAiSession || trackUserAiSession?.tokensLeft < 50) {
-    trackUserAiSession = await self.ai.languageModel.create({
-      systemPrompt: `Your job is to identify by looking at the url of a website or the title and description of the youtube video to tell in JSON response whether this website or video is related to the following: ${userObjective} The main goal of the user to focus on leetcode problems. So all the websites that does not contribute to leetcode problems should be considered as invalid. I will also have to show the user a message about reminding how this website is not related and the user should go back to completing the objective set by the user which is ${userObjective}. The friendly message you would generate to inform the user how this is not relevant would be not longer than 1 sentence. Keep it short and you are free to include a small quote. The response would be in the following JSON format: "{"relevant":"false","userMessage":"some positive message reminding the user", "reason":"reason for it to not being relevant"}" or something like this too "{"relevant":"true","userMessage":""(no message is required as the relevant is true), "reason":"reason for why it is relevant."}". If the relevant is false, inform the user with a one line message that this is not relevant to the ${userObjective} with a small one line positive quote.`,
+  try {
+    const { url } = tabDetails;
+    let { objective: userObjective } = await getLocalStorage({
+      param: 'objective',
     });
-  }
-  clearTimeout(trackUserTimeoutID);
-  trackUserTimeoutID = setTimeout(async () => {
-    console.log(url);
-    console.log(tabDetails);
-    if (url.includes('https://www.youtube.com/watch?v=')) {
-      const { id } = tabDetails;
-      const youtubeInfo = await chrome.tabs.sendMessage(id, {
-        type: 'getYoutubeVideoInfo',
-      });
-      const { response: title } = youtubeInfo;
-      const aiResponse = await trackUserAiSession.prompt(
-        `Tell whether this youtube video aligns with the mentioned goals ${title} in the format that you are supposed to answer.`
-      );
-      console.log(aiResponse);
-    } else {
-      const aiResponse = await trackUserAiSession.prompt(`${url}`);
-      console.log(aiResponse);
+    if (!Object.keys(userObjective).length) {
+      userObjective = 'leetcode problem/DSA ';
     }
-  }, 3000);
+    console.log('userObjective: ');
+    console.log(userObjective);
+    if (!trackUserAiSession || trackUserAiSession?.tokensLeft < 50) {
+      trackUserAiSession = await self.ai.languageModel.create({
+        systemPrompt: `Your job is to identify by looking at the url of a website or the title and description of the youtube video to tell in JSON response whether this website or video is related to the following: ${userObjective} The main goal of the user to focus on leetcode problems. So all the websites that does not contribute to leetcode problems should be considered as invalid. I will also have to show the user a message about reminding how this website is not related and the user should go back to completing the objective set by the user which is ${userObjective}. The friendly message you would generate to inform the user how this is not relevant would be not longer than 1 sentence. Keep it short and you are free to include a small quote. The response would be in the following JSON format: "{"relevant":"false","userMessage":"some positive message reminding the user", "reason":"reason for it to not being relevant"}" or something like this too "{"relevant":"true","userMessage":""(no message is required as the relevant is true), "reason":"reason for why it is relevant."}". If the relevant is false, inform the user with a one line message that this is not relevant to the ${userObjective} with a small one line positive quote.`,
+      });
+    }
+    clearTimeout(trackUserTimeoutID);
+    trackUserTimeoutID = setTimeout(async () => {
+      // TODO: remove in prod
+      console.log(url);
+      console.log(tabDetails);
+
+      const { id } = tabDetails;
+
+      if (url.includes('https://www.youtube.com/watch?v=')) {
+        const youtubeInfo = await chrome.tabs.sendMessage(id, {
+          type: 'getYoutubeVideoInfo',
+        });
+        const { response: title } = youtubeInfo;
+        const aiResponse = await trackUserAiSession.prompt(
+          `Tell whether this youtube video aligns with the mentioned goals ${title} in the format that you are supposed to answer.`
+        );
+        const { relevant } = await JSON.parse(aiResponse);
+        console.log('relevant is ');
+        console.log(relevant);
+        if (!relevant) {
+          console.log('Sending message');
+          await chrome.tabs.sendMessage(id, {
+            type: 'showAlert',
+            alert:
+              'It seems this YouTube video is distracting you from your goal.',
+          });
+        }
+      } else {
+        const aiResponse = await trackUserAiSession.prompt(`${url}`);
+        const { relevant } = JSON.parse(aiResponse);
+        console.log('relevant is ');
+        console.log(relevant);
+
+        if (!relevant) {
+          console.log('Sending message');
+          await chrome.tabs.sendMessage(id, {
+            type: 'showAlert',
+            alert: 'It seems this website is distracting you from your goal.',
+          });
+        }
+      }
+    }, 2000);
+  } catch (error) {
+    console.log('trackUser error: ', error);
+  }
 };

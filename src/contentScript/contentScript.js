@@ -5,7 +5,16 @@ import {
 
 console.log('Content.js');
 
+// Variables for the select dropdown
+let isElementAdded = false;
+let languageDropdown = undefined;
+let supportedLanguages = ['hi', 'es', 'ja'];
+let EnglishQuestionDescription = undefined;
+let currentQuestion = undefined;
+let prevQuestion = undefined;
+
 chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
+  // TODO: remvoe in prod
   console.log('Message is: ');
   console.log(message);
   if (message.type === 'getQuestionDescription') {
@@ -65,16 +74,13 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
       isElementAdded = true;
       selectDropdown();
     }
+  } else if (message.type === 'showAlert') {
+    const { alert } = message;
+    console.log('Showing alert');
+    console.log(alert);
+    showAlert(alert);
   }
 });
-
-// Variables for the select dropdown
-let isElementAdded = false;
-let languageDropdown = undefined;
-let supportedLanguages = ['hi', 'es', 'ja'];
-let EnglishQuestionDescription = undefined;
-let currentQuestion = undefined;
-let prevQuestion = undefined;
 
 const selectDropdown = () => {
   try {
@@ -109,4 +115,73 @@ const selectDropdown = () => {
   } catch (error) {
     console.log('Error in language dropdown(contentScript.js): ', error);
   }
+};
+
+// adds the bootstrap cdns to the head of the document
+const showAlert = (alert = '') => {
+  // Adding tailwind css cdn
+  const linkEle = document.createElement('link');
+  linkEle.href =
+    'https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css';
+  linkEle.rel = 'stylesheet';
+  document.head.append(linkEle);
+
+  // Create a popup element
+  const popup = document.createElement('div');
+  popup.classList.add(
+    'fixed',
+    'bottom-5',
+    'right-5',
+    'w-[38rem]',
+    'p-4',
+    'bg-white',
+    'shadow-lg',
+    'rounded-lg',
+    'transition-all',
+    'duration-300',
+    'ease-in-out',
+    'transform',
+    'translate-y-20',
+    'opacity-0'
+  );
+
+  // Add inner content
+  popup.innerHTML = `
+  <div class="flex justify-between items-center">
+    <div class="text-gray-800 text-lg">
+      ${alert}
+    </div>
+    <button id="closePopup" class="ml-4 text-gray-500 hover:text-gray-800">
+      ✖
+    </button>
+  </div>
+`;
+
+  // Append the popup to the body
+  document.body.appendChild(popup);
+
+  // Function to show the popup with animation
+  setTimeout(() => {
+    popup.classList.remove('translate-y-20', 'opacity-0');
+    popup.classList.add('translate-y-0', 'opacity-100');
+  }, 100); // Delay to allow DOM rendering
+
+  let closeTimeout = undefined;
+  // Close button functionality
+  const closeButton = document.getElementById('closePopup');
+  closeButton.addEventListener('click', () => {
+    clearTimeout(closeTimeout);
+    popup.classList.add('translate-y-20', 'opacity-0'); // Add exit animation
+    closeTimeout = setTimeout(() => {
+      popup.remove(); // Remove popup after animation
+    }, 300); // Match with animation duration
+  });
+
+  clearTimeout(closeTimeout);
+  closeTimeout = setTimeout(() => {
+    closeTimeout = setTimeout(() => {
+      popup.classList.add('translate-y-20', 'opacity-0'); // Add exit animation
+      popup.remove(); // Remove popup after animation
+    }, 300); // Match with animation duration
+  }, 5000);
 };

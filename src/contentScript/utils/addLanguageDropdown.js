@@ -24,7 +24,7 @@ export default function () {
 
   // Create the select element
   const select = document.createElement('select');
-  select.classList.add(['content-language-selector']);
+  select.classList.add('content-language-selector');
 
   // Append the default option first
   select.appendChild(defaultOption);
