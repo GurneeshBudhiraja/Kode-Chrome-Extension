@@ -45,64 +45,59 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
       .querySelector('#above-the-fold')
       .querySelector('#title').innerText;
     sendResponse({ response: title });
+  } else if (message.type === 'resetSelectElement') {
+    const { url } = message;
+    currentURL = url;
+    if (!prevURL) {
+      prevURL = currentURL;
+    }
+    if (languageDropdown && prevURL !== currentURL) {
+      document.querySelector('.content-language-selector')?.remove();
+      EnglishQuestionDescription = undefined;
+    }
+    languageDropdown = addLanguageDropdown();
+    selectDropdown();
   }
 });
 
 // Variables for the select dropdown
-let languageDropdown = null;
+let languageDropdown = undefined;
 let supportedLanguages = ['hi', 'es', 'ja'];
-let prevURL = undefined;
 let EnglishQuestionDescription = undefined;
+let currentURL = undefined;
+let prevURL = undefined;
 
-(() => {
+const selectDropdown = () => {
   try {
-    let currentURL = window.location.href;
-    if (currentURL.startsWith('https://leetcode.com/problems/')) {
-      languageDropdown = addLanguageDropdown();
+    languageDropdown.addEventListener('change', async () => {
+      // Language selected by the user
+      const selectedLanguage = languageDropdown.value;
 
-      languageDropdown.addEventListener('change', async () => {
-        currentURL = window.location.href;
-        // If no leetcode problem url has been visited
-        if (!prevURL) {
-          prevURL = currentURL;
-          EnglishQuestionDescription = undefined;
-        } else if (
-          // Checks the similarity of the leetcode question
-          prevURL.split('https://leetcode.com/problems/')[1].split('/')[0] !==
-          currentURL.split('https://leetcode.com/problems/')[1].split('/')[0]
-        ) {
-          EnglishQuestionDescription = undefined;
-        }
+      if (!supportedLanguages.includes(selectedLanguage)) {
+        console.log('Unsupported language: ' + selectedLanguage);
+        return;
+      }
 
-        // Language selected by the user
-        const selectedLanguage = languageDropdown.value;
+      const { translatorSession } = await createTranslator(selectedLanguage);
 
-        if (!supportedLanguages.includes(selectedLanguage)) {
-          console.log('Unsupported language: ' + selectedLanguage);
-          return;
-        }
-
-        const { translatorSession } = await createTranslator(selectedLanguage);
-
-        // Gets the english version of the leetcode question
-        if (EnglishQuestionDescription === undefined) {
-          // Getting the current description on the leetcode question
-          EnglishQuestionDescription = document.querySelector(
-            '[data-track-load="description_content"]'
-          )?.textContent;
-        }
-
-        const translatedText = await translatorSession?.translate(
-          EnglishQuestionDescription
-        );
-
-        // Updating the leetcode question description
-        document.querySelector(
+      // Gets the english version of the leetcode question
+      if (EnglishQuestionDescription === undefined) {
+        // Getting the current description on the leetcode question
+        EnglishQuestionDescription = document.querySelector(
           '[data-track-load="description_content"]'
-        ).textContent = translatedText;
-      });
-    }
+        )?.textContent;
+      }
+
+      const translatedText = await translatorSession?.translate(
+        EnglishQuestionDescription
+      );
+
+      // Updating the leetcode question description
+      document.querySelector(
+        '[data-track-load="description_content"]'
+      ).textContent = translatedText;
+    });
   } catch (error) {
     console.log('Error in language dropdown(contentScript.js): ', error);
   }
-})();
+};

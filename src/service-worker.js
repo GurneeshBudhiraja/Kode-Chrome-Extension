@@ -92,26 +92,49 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 
 chrome.tabs.onUpdated.addListener((tabId) => {
   chrome.tabs.get(tabId, (tabInfo) => {
-    tabDetails = tabInfo;
+    tabDetails = tabInfo; // TODO: check if this name is even required
     if (monitorUser) {
       trackUser(tabDetails);
     }
+    selectElementLeetcode(tabInfo);
   });
 });
 
 chrome.tabs.onActivated.addListener(({ tabId }) => {
   chrome.tabs.get(tabId, (tabInfo) => {
-    tabDetails = tabInfo;
+    tabDetails = tabInfo; // TODO: check if this name is even required
     if (monitorUser) {
       trackUser(tabDetails);
     }
+    selectElementLeetcode(tabInfo);
   });
 });
 
-let trackUserTimeoutID = null;
-let trackUserAiSession = null;
+// For content script to add and reset the select option
+let selectTimeout = undefined;
+function selectElementLeetcode(tabInfo) {
+  try {
+    clearTimeout(selectTimeout);
+    selectTimeout = setTimeout(async () => {
+      console.log('tabInfo is: ');
+      console.log(tabInfo);
+      const { id, url } = tabInfo;
+      if (url.startsWith('https://leetcode.com/problems/')) {
+        await chrome.tabs.sendMessage(id, {
+          type: 'resetSelectElement',
+          url,
+        });
+      }
+    }, 1000);
+  } catch (error) {
+    console.log('Failed to send message for the select element: ', error);
+    console.log('Refresh the page as the connection can not be established');
+  }
+}
 
 // For the focus mode
+let trackUserTimeoutID = null;
+let trackUserAiSession = null;
 const trackUser = async (tabDetails) => {
   const { url } = tabDetails;
   let { objective: userObjective } = await getLocalStorage({
