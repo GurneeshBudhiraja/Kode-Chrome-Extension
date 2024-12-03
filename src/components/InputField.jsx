@@ -1,8 +1,7 @@
 import { useState } from 'react';
 import SendIcon from '@mui/icons-material/Send';
 
-function InputField() {
-  const [loading, setLoading] = useState(false); // Tracks the loading state
+function InputField({ inputLoading, selectedTool, questionName }) {
   const [input, setInput] = useState(''); // Chat textarea state
 
   const handleKeyDown = (e) => {
@@ -18,7 +17,7 @@ function InputField() {
       <textarea
         autoFocus
         value={input}
-        disabled={loading}
+        disabled={inputLoading}
         onChange={(e) => setInput(e.target.value)}
         onKeyDown={handleKeyDown}
         placeholder="Type your message..."

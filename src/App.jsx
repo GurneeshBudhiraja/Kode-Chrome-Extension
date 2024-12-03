@@ -7,6 +7,7 @@ function App() {
   const [aiAvailable, setAiAvailable] = useState(true); // Tracks whether the browser supports the ai features
   const [questionName, setQuestionName] = useState(''); // Current leetcode question the user is on
   const [selectedTool, setSelectedTool] = useState('');
+  const [inputLoading, setInputLoading] = useState(false); // Tracks the loading state
 
   // Pages supported by the extension
   const pages = {
@@ -63,12 +64,26 @@ function App() {
         </div>
       </div>
       <div>{pages[selectedTool] ?? ''}</div>
-      <div className="flex flex-col items-start justify-between gap-2">
+      <div
+        className={`flex flex-col items-start justify-between gap-2 ${
+          selectedTool === 'dsa' || selectedTool === 'recommendation' ? "mt-4" : "mt-4"
+        }`}
+      >
+        <label htmlFor="tools" className='text-white text-[17px] font-medium font-roboto'>Select tool:</label>
         <select
           name="tools"
           id="tools"
           className="bg-black/30 text-gray-200 text-sm px-3 p-2 rounded-lg border border-gray-700 focus:outline-none focus:ring-1 focus:ring-blue-500"
-          onChange={(e) => setSelectedTool(e.target.value)}
+          onChange={(e) => {
+            // Get the selected option element
+            const selectedOption = e.target.options[e.target.selectedIndex];
+
+            // Access the data-input-visible attribute
+            const inputVisible = selectedOption.dataset.inputVisible;
+            console.log(inputVisible);
+            // Update the state
+            setSelectedTool(e.target.value);
+          }}
         >
           <option value="" selected disabled hidden>
             Tools
@@ -79,10 +94,12 @@ function App() {
           <option value="recommendation">Recommendation</option>
           <option value="focus">Focus Center</option>
         </select>
-        {selectedTool === 'notes' ||
-        selectedTool === '' ||
-        selectedTool === 'focus' ? null : (
-          <InputField />
+        {(selectedTool === 'dsa' || selectedTool === 'recommendation') && (
+          <InputField
+            inputLoading={inputLoading}
+            questionName={questionName}
+            selectedTool={selectedTool}
+          />
         )}
       </div>
     </div>
