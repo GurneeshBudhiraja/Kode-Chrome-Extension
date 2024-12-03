@@ -38,8 +38,6 @@ const Chat = ({
     messageAI(input);
   };
 
-  
-
   return (
     <div className="flex flex-col rounded-lg border border-gray-700 bg-gray-900/50 w-full h-[19rem] ">
       <div className="flex-1 p-4 overflow-y-auto space-y-4">
