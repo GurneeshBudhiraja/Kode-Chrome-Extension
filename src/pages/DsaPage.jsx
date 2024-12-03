@@ -2,8 +2,6 @@ import { useState, useEffect, useRef } from 'react';
 import {
   sendMessage,
   createSession,
-  setLocalStorage,
-  getLocalStorage,
   sendContentMessage,
 } from '../utils/utils.js';
 import {
@@ -12,7 +10,11 @@ import {
   recommendationAgentPrompt,
   nonCodingAgentPrompt,
 } from '../systemPrompts/dsaPrompts/dsaPrompts.js';
-import { CodingLanguage, Chat } from '../components/components.js';
+import {
+  CodingLanguage,
+  ChatDisplay,
+  InputFieldNew,
+} from '../components/components.js';
 
 function DsaPage({
   setAiAvailable,
@@ -29,7 +31,6 @@ function DsaPage({
   const [recommendationAgentSession, setRecommendationAgentSession] =
     useState(null);
   const [nonCodingAgentSession, setNonCodingAgentSession] = useState(null);
-
   // gets the user code from content.js
   const getUserCode = async () => {
     try {
@@ -45,80 +46,39 @@ function DsaPage({
   // Send message to the promptAPI
   const messageAI = async (message) => {
     try {
+      setLoading(true);
+      setMessages((prev) => [...prev, { sender: 'user', text: message }]);
+
       // Gets the current user code
       const userCode = await getUserCode();
       console.log('User Code:');
       console.log(userCode);
 
-      console.log('Getting the response from the head');
-      const headAgentResp = await agentHeadSession.prompt(message);
+      const resp = await dsaAgentSession.prompt(message);
+      console.log(resp);
 
-      const validJson = headAgentResp.replace(/'/g, '"');
-
-      const { agent } = JSON.parse(validJson);
-      console.log('AGENT SELECTED FOR THE MESSAGE IS:', agent);
-
-      if (agent === 'dsaAgent') {
-        const resp = await dsaAgentSession.prompt(message);
-        console.log(resp);
-      } else if (agent === 'DSARecommendationAgent') {
-        const resp = await recommendationAgentSession.prompt(message);
-        console.log(resp);
-      } else if (agent === 'nonCodingAgent') {
-        const resp = await nonCodingAgentSession.prompt(message);
-        console.log(resp);
-      }
+      setMessages((prev) => [...prev, { sender: 'ai', text: resp }]);
     } catch (error) {
       console.log('Failed to message AI:', error);
+    } finally {
+      setInput('');
+      setLoading(false);
     }
   };
 
   const activateAI = async () => {
     try {
-      const headPrompt = agentHeadPrompt();
       const dsaPrompt = dsaAgentPrompt(questionName, selectedLanguage);
-      const recommendationPrompt = recommendationAgentPrompt();
-      const nonCodingPrompt = nonCodingAgentPrompt();
-
-      const headSession = await createSession({
-        systemPrompt: headPrompt,
-      });
 
       const dsaSession = await createSession({ systemPrompt: dsaPrompt });
 
-      const recommendationSession = await createSession({
-        systemPrompt: recommendationPrompt,
-      });
-
-      const nonCodingSession = await createSession({
-        systemPrompt: nonCodingPrompt,
-      });
-
-      // Checks the array has all the valid session object
-      const arr = [
-        headSession,
-        dsaSession,
-        recommendationSession,
-        nonCodingSession,
-      ];
-      arr.map((obj) => {
-        if (!Object.keys(obj).length) {
-          console.log('Empty prompt session object');
-          return;
-        }
-      });
-
-      const { session: hSession } = headSession;
-      setAgentHeadSession(hSession);
+      if (!Object.keys(dsaSession).length) {
+        console.log('Empty prompt session object');
+        return;
+      }
 
       const { session: dSession } = dsaSession;
       setDsaAgentSession(dSession);
-
-      const { session: rSession } = recommendationSession;
-      setRecommendationAgentSession(rSession);
-
-      const { session: ncSession } = nonCodingSession;
-      setNonCodingAgentSession(ncSession);
     } catch (error) {
       console.log('Failed to activate the prompt AI in DsaPage.jsx:', error);
       return;
@@ -176,14 +136,15 @@ function DsaPage({
                 selectedLanguage={selectedLanguage}
                 setSelectedLanguage={setSelectedLanguage}
               />
-              <Chat
-                loading={loading}
-                messageAI={messageAI}
-                messages={messages}
-                setMessages={setMessages}
-                input={input}
-                setInput={setInput}
-              />
+              <div className="my-4 space-y-2">
+                <ChatDisplay messages={messages} type="dsa" />
+                <InputFieldNew
+                  input={input}
+                  setInput={setInput}
+                  messageAI={messageAI}
+                  inputLoading={loading}
+                />
+              </div>
             </div>
           ) : (
             <div className="text-[#F5F5F5] bg-[#1A1B23] absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-lg font-medium p-3 text-center border rounded-lg select-none w-5/6">
