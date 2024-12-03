@@ -1,4 +1,4 @@
-import { DsaPage, NotesPage } from './pages/pages.js';
+import { DsaPage, NotesPage, FocusPage } from './pages/pages.js';
 import { InputField } from './components/components.js';
 import { useState, useEffect } from 'react';
 import { getCurrentTab } from './utils/utils.js';
@@ -19,6 +19,7 @@ function App() {
       />
     ),
     notes: <NotesPage questionName={questionName} />,
+    focus: <FocusPage />,
   };
 
   // Gets the current tab info and validates if the url is a valid leetcode question url
@@ -76,8 +77,13 @@ function App() {
           <option value="notes">Notes</option>
           <option value="github">Github</option>
           <option value="recommendation">Recommendation</option>
+          <option value="focus">Focus Center</option>
         </select>
-        {selectedTool === 'notes' ? null : <InputField />}
+        {selectedTool === 'notes' ||
+        selectedTool === '' ||
+        selectedTool === 'focus' ? null : (
+          <InputField />
+        )}
       </div>
     </div>
   );

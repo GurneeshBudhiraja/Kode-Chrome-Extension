@@ -1,3 +1,4 @@
 import DsaPage from './DsaPage.jsx';
 import NotesPage from './NotesPage.jsx';
-export { DsaPage, NotesPage };
+import FocusPage from './FocusPage.jsx';
+export { DsaPage, NotesPage, FocusPage };

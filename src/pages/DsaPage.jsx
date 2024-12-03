@@ -12,12 +12,7 @@ import {
   recommendationAgentPrompt,
   nonCodingAgentPrompt,
 } from '../systemPrompts/dsaPrompts/dsaPrompts.js';
-import {
-  ToolTip,
-  SwitchButton,
-  CodingLanguage,
-  Chat,
-} from '../components/components.js';
+import { CodingLanguage, Chat } from '../components/components.js';
 
 function DsaPage({
   setAiAvailable,
@@ -29,7 +24,6 @@ function DsaPage({
   const [loading, setLoading] = useState(false); // Keeps the track of the loading state
   const [input, setInput] = useState(''); // Chat textarea state
   const [messages, setMessages] = useState([]); // Chat messages state
-  const objectiveRef = useRef();
   const [agentHeadSession, setAgentHeadSession] = useState(null);
   const [dsaAgentSession, setDsaAgentSession] = useState(null);
   const [recommendationAgentSession, setRecommendationAgentSession] =
@@ -166,15 +160,6 @@ function DsaPage({
         );
     }
 
-    // gets the user objective from the local storage
-    getLocalStorage({ param: 'objective' })
-      .then((objectiveResponse) => {
-        if (Object.keys(objectiveResponse).length && objectiveRef.current) {
-          objectiveRef.current.value = objectiveResponse['objective'];
-        }
-      })
-      .catch((error) => console.log('Failed to fetch the objective: ', error));
-
     activateAI();
 
     // Updates the loading state
@@ -185,32 +170,6 @@ function DsaPage({
     <div>
       {aiAvailable ? (
         <div className="mt-3 gap-3 flex flex-col ">
-          <div className="flex justify-between items-center">
-            <div className="flex items-center justify-center">
-              <span className="text-focusmode-size text-white">Focus mode</span>
-              <ToolTip title="Reminds you to return to LeetCode only if you're off-task for 10 minutes." />
-            </div>
-            <SwitchButton />
-          </div>
-          <div className="flex items-center w-full h-9 bg-black/20 rounded-lg border border-gray-700 overflow-hidden">
-            <input
-              type="text"
-              placeholder="Enter your objective"
-              className="flex-1 bg-transparent text-gray-200 placeholder-gray-400 text-[17px] px-4 h-full focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
-              ref={objectiveRef}
-            />
-            <button
-              className="px-4 h-full text-sm font-semibold text-gray-200 bg-blue-700 hover:bg-blue-600 transition-colors rounded-none focus:ring-2 focus:ring-blue-500 focus:outline-none"
-              onClick={async () => {
-                if (objectiveRef.current) {
-                  const objective = objectiveRef.current.value.trim();
-                  await setLocalStorage({ objective });
-                }
-              }}
-            >
-              Submit
-            </button>
-          </div>
           {questionName ? (
             <div className="h-[420px]">
               <CodingLanguage
