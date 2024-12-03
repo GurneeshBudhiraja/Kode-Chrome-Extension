@@ -1,14 +1,17 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import SendIcon from '@mui/icons-material/Send';
 
-function InputField({ inputLoading, selectedTool, questionName }) {
+function InputField({ inputLoading, selectedTool, questionName, onClick }) {
   const [input, setInput] = useState(''); // Chat textarea state
+  const buttonRef = useRef(undefined);
 
   const handleKeyDown = (e) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
+      console.log('Message is: ');
       console.log(e.target.value);
       setInput('');
+      buttonRef.current.click();
     }
   };
 
@@ -27,6 +30,8 @@ function InputField({ inputLoading, selectedTool, questionName }) {
       <button
         className="ml-2 text-blue-500 hover:text-blue-400 transition-colors disabled:text-gray-500 disabled:cursor-not-allowed"
         disabled={!input.trim()}
+        ref={buttonRef}
+        onClick={onClick ?? (() => console.log('Not provided onclick'))}
       >
         <SendIcon />
       </button>

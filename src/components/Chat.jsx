@@ -3,14 +3,7 @@ import CircularProgress from '@mui/material/CircularProgress';
 
 import { sendMessage, sendContentMessage } from '../utils/utils.js';
 
-const Chat = ({
-  loading,
-  messages,
-  setMessages,
-  input,
-  setInput,
-  messageAI, // TODO: use this after completing the functionality
-}) => {
+const Chat = ({ loading, messages, setMessages, input, setInput }) => {
   const lastMessageRef = useRef(null); // Reference to the last message
 
   useEffect(() => {
@@ -21,22 +14,6 @@ const Chat = ({
       });
     }
   }, [messages]);
-
-  const handleSend = () => {
-    // Sends the message
-    if (input.trim()) {
-      if (input === 'full solution') {
-        setMessages([
-          ...messages,
-          { text: 'https://gemini.google.com/app', sender: 'ai' },
-        ]);
-      } else {
-        setMessages([...messages, { text: input, sender: 'user' }]);
-      }
-      setInput('');
-    }
-    messageAI(input);
-  };
 
   return (
     <div className="flex flex-col rounded-lg border border-gray-700 bg-gray-900/50 w-full h-[21rem] ">

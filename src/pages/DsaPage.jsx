@@ -1,9 +1,7 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import {
   sendMessage,
   createSession,
-  setLocalStorage,
-  getLocalStorage,
   sendContentMessage,
 } from '../utils/utils.js';
 import {

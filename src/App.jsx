@@ -1,7 +1,12 @@
-import { DsaPage, NotesPage, FocusPage } from './pages/pages.js';
-import { InputField } from './components/components.js';
 import { useState, useEffect } from 'react';
 import { getCurrentTab } from './utils/utils.js';
+import { InputField } from './components/components.js';
+import {
+  DsaPage,
+  NotesPage,
+  FocusPage,
+  RecommendationPage,
+} from './pages/pages.js';
 
 function App() {
   const [aiAvailable, setAiAvailable] = useState(true); // Tracks whether the browser supports the ai features
@@ -21,6 +26,7 @@ function App() {
     ),
     notes: <NotesPage questionName={questionName} />,
     focus: <FocusPage />,
+    recommendation: <RecommendationPage />,
   };
 
   // Gets the current tab info and validates if the url is a valid leetcode question url
@@ -66,10 +72,17 @@ function App() {
       <div>{pages[selectedTool] ?? ''}</div>
       <div
         className={`flex flex-col items-start justify-between gap-2 ${
-          selectedTool === 'dsa' || selectedTool === 'recommendation' ? "mt-4" : "mt-4"
+          selectedTool === 'dsa' || selectedTool === 'recommendation'
+            ? 'mt-4'
+            : 'mt-4'
         }`}
       >
-        <label htmlFor="tools" className='text-white text-[17px] font-medium font-roboto'>Select tool:</label>
+        <label
+          htmlFor="tools"
+          className="text-white text-[17px] font-medium font-roboto"
+        >
+          Select tool:
+        </label>
         <select
           name="tools"
           id="tools"
@@ -94,7 +107,7 @@ function App() {
           <option value="recommendation">Recommendation</option>
           <option value="focus">Focus Center</option>
         </select>
-        {(selectedTool === 'dsa' || selectedTool === 'recommendation') && (
+        {selectedTool === 'dsa' && (
           <InputField
             inputLoading={inputLoading}
             questionName={questionName}

@@ -6,6 +6,9 @@ import OptionBar from './OptionBar.jsx';
 import Note from './Note.jsx';
 import SingleNote from './SingleNote.jsx';
 import InputField from './InputField.jsx';
+import ChatDisplay from './ChatDisplay.jsx';
+import RecommendationCard from './RecommendationCard.jsx';
+import InputFieldNew from './InputFieldNew.jsx';
 
 export {
   ToolTip,
@@ -16,4 +19,7 @@ export {
   Note,
   SingleNote,
   InputField,
+  ChatDisplay,
+  RecommendationCard,
+  InputFieldNew,
 };
