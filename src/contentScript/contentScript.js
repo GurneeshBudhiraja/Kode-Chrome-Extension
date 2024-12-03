@@ -47,25 +47,34 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
     sendResponse({ response: title });
   } else if (message.type === 'resetSelectElement') {
     const { url } = message;
-    currentURL = url;
-    if (!prevURL) {
-      prevURL = currentURL;
-    }
-    if (languageDropdown && prevURL !== currentURL) {
-      document.querySelector('.content-language-selector')?.remove();
+    // Extracts the leetcode question the user is on
+    currentQuestion = url
+      .split('https://leetcode.com/problems/')[1]
+      ?.split('/')[0];
+    if (!prevQuestion) {
+      prevQuestion = currentQuestion;
+    } else if (languageDropdown && prevQuestion !== currentQuestion) {
+      document.querySelector('.content-language-selector').remove();
       EnglishQuestionDescription = undefined;
+      prevQuestion = currentQuestion;
+      isElementAdded = false;
     }
-    languageDropdown = addLanguageDropdown();
-    selectDropdown();
+    if (!isElementAdded) {
+      console.log('Adding dropdown');
+      languageDropdown = addLanguageDropdown();
+      isElementAdded = true;
+      selectDropdown();
+    }
   }
 });
 
 // Variables for the select dropdown
+let isElementAdded = false;
 let languageDropdown = undefined;
 let supportedLanguages = ['hi', 'es', 'ja'];
 let EnglishQuestionDescription = undefined;
-let currentURL = undefined;
-let prevURL = undefined;
+let currentQuestion = undefined;
+let prevQuestion = undefined;
 
 const selectDropdown = () => {
   try {
