@@ -36,7 +36,7 @@ This video demonstrates how the extension works, and its features.
 
 1. Clone the repository:
    ```bash
-   https://github.com/GurneeshBudhiraja/Kode-Chrome-Extension.git
+   git clone https://github.com/GurneeshBudhiraja/Kode-Chrome-Extension.git
    ```
 2. Navigate to the project directory:
    ```bash
