@@ -1,5 +1,4 @@
 function setLocalStorage(obj) {
-  // TODO: remove in PROD
   console.log('setLocalStorage');
   console.log(obj);
   chrome.storage.sync

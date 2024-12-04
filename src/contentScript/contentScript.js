@@ -14,7 +14,6 @@ let currentQuestion = undefined;
 let prevQuestion = undefined;
 
 chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
-  // TODO: remvoe in prod
   console.log('Message is: ');
   console.log(message);
   if (message.type === 'getQuestionDescription') {
@@ -30,7 +29,6 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
       .filter((text) => text !== '')
       .join('\n');
 
-    console.log(formattedText); // TODO: remove in production
     sendResponse({ response: formattedText });
   } else if (message.type === 'customizeGeminiPage') {
     console.log('working');
@@ -80,6 +78,7 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
     console.log(alert);
     showAlert(alert);
   }
+  return true;
 });
 
 const selectDropdown = () => {

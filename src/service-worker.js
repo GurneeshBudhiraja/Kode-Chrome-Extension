@@ -1,8 +1,4 @@
-import {
-  getLocalStorage,
-  setLocalStorage,
-  HintTemplate,
-} from './utils/utils.js';
+import { getLocalStorage, setLocalStorage } from './utils/utils.js';
 
 let monitorUser = null;
 let tabDetails = null;
@@ -36,21 +32,6 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
       .catch((error) =>
         console.log('Failed to fetch focusMode from the local storage: ', error)
       );
-  } else if (request.type === 'getHints') {
-    // Get hints from the local storage
-    const { questionName } = request;
-
-    getLocalStorage({ param: questionName }).then((hintResponse) => {
-      // Checks for the empty object
-      if (!Object.keys(hintResponse).length) {
-        // Returns the new hint template
-        const hintTemplateResponse = new HintTemplate(questionName);
-        sendResponse(hintTemplateResponse);
-      } else {
-        // Returns the existing hints fetched from the local storage
-        sendResponse(hintResponse);
-      }
-    });
   } else if (request.type === 'getPreferredLanguage') {
     // Gets the preferred coding language from the local storage
 
@@ -92,7 +73,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 
 chrome.tabs.onUpdated.addListener((tabId) => {
   chrome.tabs.get(tabId, (tabInfo) => {
-    tabDetails = tabInfo; // TODO: check if this name is even required
+    tabDetails = tabInfo;
     if (monitorUser) {
       trackUser(tabDetails);
     }
@@ -102,7 +83,7 @@ chrome.tabs.onUpdated.addListener((tabId) => {
 
 chrome.tabs.onActivated.addListener(({ tabId }) => {
   chrome.tabs.get(tabId, (tabInfo) => {
-    tabDetails = tabInfo; // TODO: check if this name is even required
+    tabDetails = tabInfo;
     if (monitorUser) {
       trackUser(tabDetails);
     }
@@ -153,7 +134,6 @@ const trackUser = async (tabDetails) => {
     }
     clearTimeout(trackUserTimeoutID);
     trackUserTimeoutID = setTimeout(async () => {
-      // TODO: remove in prod
       console.log(url);
       console.log(tabDetails);
 
