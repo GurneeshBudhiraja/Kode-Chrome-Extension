@@ -36,7 +36,7 @@ function ChatDisplay({ messages, className = '', type = '' }) {
                       key={index}
                       className="bg-white rounded-lg border border-gray-300 shadow-lg p-4 w-full max-w-sm my-2 text-sm font-medium font-inter text-black"
                     >
-                      {message.text}
+                      {message.gemini ? <>full solution</> : message.text}
                     </div>
                   ) : (
                     <div className="bg-white rounded-lg border border-gray-300 shadow-lg p-4 w-full max-w-sm mx-auto my-2 text-sm font-medium font-inter text-black">

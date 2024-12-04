@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, act } from 'react';
 import {
   sendMessage,
   createSession,
@@ -38,6 +38,10 @@ function DsaPage({
   // Send message to the promptAPI
   const messageAI = async (message) => {
     try {
+      // Checks if the AI model has enough tokens for output
+      if (dsaAgentSession?.tokensLeft < 50) {
+        await activateAI();
+      }
       setLoading(true);
       // Append the user message
       setMessages((prev) => [...prev, { sender: 'user', text: message }]);
@@ -54,11 +58,13 @@ function DsaPage({
       console.log(resp);
       // Append the AI response
       if (resp === 'full solution' || resp.startsWith('full solution')) {
+        console.log('I am here');
         setMessages((prev) => [
           ...prev,
           { sender: 'ai', text: resp, gemini: true },
         ]);
       } else {
+        console.log('I am here 2');
         setMessages((prev) => [
           ...prev,
           { sender: 'ai', text: resp, gemini: false },
