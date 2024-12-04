@@ -172,7 +172,7 @@ const trackUser = async (tabDetails) => {
           });
         }
       }
-    }, 2000);
+    }, 600000); // Shows alert after 10 minutes(600000ms)
   } catch (error) {
     console.log('trackUser error: ', error);
   }
