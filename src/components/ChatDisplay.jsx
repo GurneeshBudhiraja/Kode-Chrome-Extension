@@ -1,7 +1,12 @@
 import { useEffect, useRef } from 'react';
-import { RecommendationCard } from '../components/components.js';
+import { RecommendationCard, GeminiCard } from '../components/components.js';
 
-function ChatDisplay({ messages, className = '', type = '' }) {
+function ChatDisplay({
+  messages,
+  className = '',
+  type = '',
+  questionName = '',
+}) {
   const lastMessageRef = useRef(null);
   useEffect(() => {
     lastMessageRef?.current?.scrollIntoView({
@@ -34,9 +39,18 @@ function ChatDisplay({ messages, className = '', type = '' }) {
                   ) : type === 'dsa' ? (
                     <div
                       key={index}
-                      className="bg-white rounded-lg border border-gray-300 shadow-lg p-4 w-full max-w-sm my-2 text-sm font-medium font-inter text-black"
+                      className={` w-full max-w-sm my-2 ${
+                        !message.gemini &&
+                        'bg-white rounded-lg border border-gray-300 shadow-lg p-4  text-sm font-medium font-inter text-black'
+                      }`}
                     >
-                      {message.gemini ? <>full solution</> : message.text}
+                      {message.gemini ? (
+                        <GeminiCard
+                          questionName={questionName}
+                        />
+                      ) : (
+                        message.text
+                      )}
                     </div>
                   ) : (
                     <div className="bg-white rounded-lg border border-gray-300 shadow-lg p-4 w-full max-w-sm mx-auto my-2 text-sm font-medium font-inter text-black">

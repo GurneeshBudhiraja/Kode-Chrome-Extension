@@ -1,10 +1,13 @@
-import { useState, useEffect, act } from 'react';
+import { useState, useEffect } from 'react';
 import {
   sendMessage,
   createSession,
   sendContentMessage,
 } from '../utils/utils.js';
-import { dsaAgentPrompt } from '../systemPrompts/dsaPrompts/dsaPrompts.js';
+import {
+  dsaAgentPrompt,
+  requestDetectPrompt,
+} from '../systemPrompts/dsaPrompts/dsaPrompts.js';
 import {
   CodingLanguage,
   ChatDisplay,
@@ -22,6 +25,7 @@ function DsaPage({
   const [input, setInput] = useState(''); // Chat textarea state
   const [messages, setMessages] = useState([]); // Chat messages state
   const [dsaAgentSession, setDsaAgentSession] = useState(null);
+  const [requestDetectAgent, setRequestDetectAgent] = useState(null);
 
   // gets the user code from content.js
   const getUserCode = async () => {
@@ -39,7 +43,10 @@ function DsaPage({
   const messageAI = async (message) => {
     try {
       // Checks if the AI model has enough tokens for output
-      if (dsaAgentSession?.tokensLeft < 50) {
+      if (
+        dsaAgentSession?.tokensLeft < 50 ||
+        requestDetectAgent?.tokensLeft < 50
+      ) {
         await activateAI();
       }
       setLoading(true);
@@ -51,19 +58,26 @@ function DsaPage({
       console.log('User Code:');
       console.log(userCode);
 
-      // asking ai
-      const resp = await dsaAgentSession.prompt(
-        `This much code has been written: "${userCode}" . And here is my request: ${message}. Keep your answers short and concise. If my message strongly insist on getting the solution, do not provide with the full code just return the sentence 'full solution'`
-      );
-      console.log(resp);
-      // Append the AI response
-      if (resp === 'full solution' || resp.startsWith('full solution')) {
-        console.log('I am here');
+      // asking ai for the category of the message
+      const detectResp = await requestDetectAgent.prompt(message);
+      console.log('Detected category:');
+      console.log(detectResp);
+
+      if (detectResp === 'full' || detectResp.startsWith('full')) {
+        // Full solution request
+        console.log('User asked for full solution');
         setMessages((prev) => [
           ...prev,
-          { sender: 'ai', text: resp, gemini: true },
+          { sender: 'ai', text: '', gemini: true },
         ]);
       } else {
+        // Hint request
+        const resp = await dsaAgentSession.prompt(
+          `This much code has been written: "${userCode}" . And here is my request: ${message}. Keep your answers short and concise. If my message strongly insist on getting the solution, do not provide with the full code just return the sentence 'full solution'`
+        );
+        console.log(resp);
+
+        // Append the AI response
         console.log('I am here 2');
         setMessages((prev) => [
           ...prev,
@@ -73,6 +87,7 @@ function DsaPage({
     } catch (error) {
       console.log('Failed to message AI:', error);
     } finally {
+      // Reset the states
       setInput('');
       setLoading(false);
     }
@@ -81,16 +96,24 @@ function DsaPage({
   const activateAI = async () => {
     try {
       const dsaPrompt = dsaAgentPrompt(questionName, selectedLanguage);
+      const detectPrompt = requestDetectPrompt();
 
+      const detectSession = await createSession({ systemPrompt: detectPrompt });
       const dsaSession = await createSession({ systemPrompt: dsaPrompt });
 
-      if (!Object.keys(dsaSession).length) {
+      if (
+        !Object.keys(dsaSession).length ||
+        !Object.keys(detectSession).length
+      ) {
         console.log('Empty prompt session object');
         return;
       }
 
       const { session: dSession } = dsaSession;
+      const { session: detectAgentSession } = detectSession;
+
       setDsaAgentSession(dSession);
+      setRequestDetectAgent(detectAgentSession); // Checks the category of the request
     } catch (error) {
       console.log('Failed to activate the prompt AI in DsaPage.jsx:', error);
       return;
@@ -149,7 +172,11 @@ function DsaPage({
                 setSelectedLanguage={setSelectedLanguage}
               />
               <div className="my-4 space-y-2">
-                <ChatDisplay messages={messages} type="dsa" />
+                <ChatDisplay
+                  messages={messages}
+                  type="dsa"
+                  questionName={questionName}
+                />
                 <InputFieldNew
                   input={input}
                   setInput={setInput}

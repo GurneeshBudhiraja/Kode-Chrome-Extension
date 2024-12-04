@@ -8,6 +8,7 @@ import SingleNote from './SingleNote.jsx';
 import ChatDisplay from './ChatDisplay.jsx';
 import RecommendationCard from './RecommendationCard.jsx';
 import InputFieldNew from './InputFieldNew.jsx';
+import GeminiCard from './GeminiCard.jsx';
 
 export {
   ToolTip,
@@ -20,4 +21,5 @@ export {
   ChatDisplay,
   RecommendationCard,
   InputFieldNew,
+  GeminiCard,
 };

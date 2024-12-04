@@ -38,42 +38,7 @@ const Chat = ({ loading, messages, setMessages, input, setInput }) => {
                 }`}
               >
                 {message.text === 'https://gemini.google.com/app' ? (
-                  <div
-                    className="p-2 cursor-pointer"
-                    onClick={async () => {
-                      let questionName = '';
-                      const URLResponse = await sendMessage({
-                        type: 'getCurrentURL',
-                      });
-                      if (
-                        URLResponse?.url?.startsWith(
-                          'https://leetcode.com/problems/'
-                        )
-                      ) {
-                        questionName =
-                          URLResponse.url
-                            ?.split('https://leetcode.com/problems/')[1]
-                            ?.split('/')[0] ?? '';
-                      }
-
-                      const { response: userCode } = await sendContentMessage({
-                        type: 'getUserCode',
-                      });
-
-                      chrome.tabs.create({
-                        url: 'https://gemini.google.com/app',
-                      });
-                      setTimeout(async () => {
-                        await sendContentMessage({
-                          type: 'customizeGeminiPage',
-                          questionName,
-                          userCode,
-                        });
-                      }, 1000);
-                    }}
-                  >
-                    Full solution
-                  </div>
+                  <div className="p-2 cursor-pointer">Full solution</div>
                 ) : (
                   message.text
                 )}
