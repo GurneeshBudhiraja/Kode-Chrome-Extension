@@ -1,15 +1,10 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import {
   sendMessage,
   createSession,
   sendContentMessage,
 } from '../utils/utils.js';
-import {
-  agentHeadPrompt,
-  dsaAgentPrompt,
-  recommendationAgentPrompt,
-  nonCodingAgentPrompt,
-} from '../systemPrompts/dsaPrompts/dsaPrompts.js';
+import { dsaAgentPrompt } from '../systemPrompts/dsaPrompts/dsaPrompts.js';
 import {
   CodingLanguage,
   ChatDisplay,
@@ -26,11 +21,8 @@ function DsaPage({
   const [loading, setLoading] = useState(false); // Keeps the track of the loading state
   const [input, setInput] = useState(''); // Chat textarea state
   const [messages, setMessages] = useState([]); // Chat messages state
-  const [agentHeadSession, setAgentHeadSession] = useState(null);
   const [dsaAgentSession, setDsaAgentSession] = useState(null);
-  const [recommendationAgentSession, setRecommendationAgentSession] =
-    useState(null);
-  const [nonCodingAgentSession, setNonCodingAgentSession] = useState(null);
+  
   // gets the user code from content.js
   const getUserCode = async () => {
     try {
