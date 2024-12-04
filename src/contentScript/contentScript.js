@@ -178,7 +178,7 @@ const showAlert = (alert = '') => {
   });
 
   clearTimeout(closeTimeout);
-  closeTimeout = setTimeout(() => {
+  setTimeout(() => {
     closeTimeout = setTimeout(() => {
       popup.classList.add('translate-y-20', 'opacity-0'); // Add exit animation
       popup.remove(); // Remove popup after animation
