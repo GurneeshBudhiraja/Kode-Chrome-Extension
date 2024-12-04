@@ -80,6 +80,7 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
     console.log(alert);
     showAlert(alert);
   }
+  return true;
 });
 
 const selectDropdown = () => {

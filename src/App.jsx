@@ -5,12 +5,13 @@ import {
   NotesPage,
   FocusPage,
   RecommendationPage,
+  AIMatePage,
 } from './pages/pages.js';
 
 function App() {
   const [aiAvailable, setAiAvailable] = useState(true); // Tracks whether the browser supports the ai features
   const [questionName, setQuestionName] = useState(''); // Current leetcode question the user is on
-  const [selectedTool, setSelectedTool] = useState('dsa'); // TODO: change this to "" in production
+  const [selectedTool, setSelectedTool] = useState('aiMate'); // TODO: change this to "" in production
 
   // Pages supported by the extension
   const pages = {
@@ -25,6 +26,7 @@ function App() {
     notes: <NotesPage questionName={questionName} />,
     focus: <FocusPage />,
     recommendation: <RecommendationPage />,
+    aiMate: <AIMatePage />,
   };
 
   // Gets the current tab info and validates if the url is a valid leetcode question url
@@ -56,7 +58,7 @@ function App() {
 
   return (
     <div className="w-screen h-screen bg-extension-background-gradient py-4 px-6 overflow-scroll ">
-      <div className=''>
+      <div className="">
         <div className="font-poppins font-bold text-heading-size bg-clip-text text-transparent bg-gradient-to-r from-heading-gradient-start from-0% via-heading-gradient-start via-40% to-heading-gradient-end to-100% tracking-wider inline-block">
           Kode
           <span className="ml-1 font-inter font-normal text-sm text-gray-600 tracking-normal">
@@ -67,7 +69,7 @@ function App() {
           Amplifying Potential
         </div>
       </div>
-      <div className='mb-20'>{pages[selectedTool] ?? ''}</div>
+      <div className="mb-20">{pages[selectedTool] ?? ''}</div>
       <div className={`flex flex-col items-start justify-between gap-2 `}>
         <label
           htmlFor="tools"
@@ -95,7 +97,7 @@ function App() {
           </option>
           <option value="dsa">DSA</option>
           <option value="notes">Notes</option>
-          <option value="github">Github</option>
+          <option value="aiMate">AI Mate</option>
           <option value="recommendation">Recommendation</option>
           <option value="focus">Focus Center</option>
         </select>
