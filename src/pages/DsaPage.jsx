@@ -22,7 +22,7 @@ function DsaPage({
   const [input, setInput] = useState(''); // Chat textarea state
   const [messages, setMessages] = useState([]); // Chat messages state
   const [dsaAgentSession, setDsaAgentSession] = useState(null);
-  
+
   // gets the user code from content.js
   const getUserCode = async () => {
     try {
@@ -39,6 +39,7 @@ function DsaPage({
   const messageAI = async (message) => {
     try {
       setLoading(true);
+      // Append the user message
       setMessages((prev) => [...prev, { sender: 'user', text: message }]);
 
       // Gets the current user code
@@ -46,10 +47,23 @@ function DsaPage({
       console.log('User Code:');
       console.log(userCode);
 
-      const resp = await dsaAgentSession.prompt(message);
+      // asking ai
+      const resp = await dsaAgentSession.prompt(
+        `This much code has been written: "${userCode}" . And here is my request: ${message}. Keep your answers short and concise. If my message strongly insist on getting the solution, do not provide with the full code just return the sentence 'full solution'`
+      );
       console.log(resp);
-
-      setMessages((prev) => [...prev, { sender: 'ai', text: resp }]);
+      // Append the AI response
+      if (resp === 'full solution' || resp.startsWith('full solution')) {
+        setMessages((prev) => [
+          ...prev,
+          { sender: 'ai', text: resp, gemini: true },
+        ]);
+      } else {
+        setMessages((prev) => [
+          ...prev,
+          { sender: 'ai', text: resp, gemini: false },
+        ]);
+      }
     } catch (error) {
       console.log('Failed to message AI:', error);
     } finally {

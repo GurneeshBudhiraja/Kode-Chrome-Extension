@@ -1,7 +1,3 @@
-
-import dsaAgentPrompt from './dsaAgent';
+import dsaAgentPrompt from './dsaAgentPrompt';
 import recommendationAgentPrompt from './recommendationAgent';
-export {
-  dsaAgentPrompt,
-  recommendationAgentPrompt,
-};
+export { dsaAgentPrompt, recommendationAgentPrompt };
