@@ -11,7 +11,7 @@ import {
 function App() {
   const [aiAvailable, setAiAvailable] = useState(true); // Tracks whether the browser supports the ai features
   const [questionName, setQuestionName] = useState(''); // Current leetcode question the user is on
-  const [selectedTool, setSelectedTool] = useState('aiMate'); // TODO: change this to "" in production
+  const [selectedTool, setSelectedTool] = useState('');
 
   // Pages supported by the extension
   const pages = {

@@ -62,8 +62,6 @@ const SingleNote = ({ setNotes, setShowNote }) => {
         `Question name is : ${questionName} and the question description is ${questionDescription}. Based on the information generate the maximum of 3 tags. If you can find the lesser most relevant tags that would be fine too.`
       );
 
-      console.log(tagsResp); // TODO: for debugging
-
       const summary = await summarizeAI.summarize(questionDescription);
 
       setQuestionSummary(summary);
